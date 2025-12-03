@@ -1,0 +1,75 @@
+"use client";
+
+import React from "react";
+import { useWebSocket } from "@/hooks/useWebSocket";
+import { useIndexedDB } from "@/hooks/useIndexedDB";
+import { useConnectionStore } from "@/stores/useConnectionStore";
+import { FlowGauge } from "@/components/metrics/FlowGauge";
+import { PowerMeter } from "@/components/metrics/PowerMeter";
+import { PressureDisplay } from "@/components/metrics/PressureDisplay";
+import { AlarmBanner } from "@/components/alarms/AlarmBanner";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+
+export function DashboardLayout() {
+  // Initialize WebSocket and IndexedDB
+  useWebSocket();
+  useIndexedDB();
+
+  const isConnected = useConnectionStore((state) => state.isConnected());
+  const status = useConnectionStore((state) => state.status);
+
+  return (
+    <div className="min-h-screen bg-hmi-bg-primary dark:bg-hmi-dark-bg-primary transition-colors duration-200">
+      <header className="sticky top-0 z-50 border-b border-hmi-bg-border dark:border-hmi-dark-bg-border bg-white dark:bg-hmi-dark-bg-secondary shadow-sm transition-colors duration-200">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-bold text-hmi-text-primary dark:text-hmi-dark-text-primary">
+              WellSmart HMI Dashboard
+            </h1>
+            <p className="text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
+              Real-time process monitoring
+            </p>
+          </div>
+
+          {/* Connection Status and Theme Toggle */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div
+                className={`h-3 w-3 rounded-full ${
+                  isConnected ? "bg-hmi-status-ok" : "bg-hmi-status-offline"
+                }`}
+              />
+              <span className="text-sm font-medium text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
+                {status === "connected" && "Connected"}
+                {status === "connecting" && "Connecting..."}
+                {status === "disconnected" && "Disconnected"}
+                {status === "error" && "Error"}
+              </span>
+            </div>
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+      <main className="mx-auto max-w-7xl px-6 py-8">
+        <AlarmBanner />
+
+        {/* Metrics Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <FlowGauge />
+          <PowerMeter />
+          <PressureDisplay />
+        </div>
+
+        {/* Placeholder for charts and alarms */}
+        <div className="mt-8">
+          <div className="rounded-lg border border-hmi-bg-border dark:border-hmi-dark-bg-border bg-white dark:bg-hmi-dark-bg-card p-6 transition-colors duration-200">
+            <h2 className="text-lg font-semibold text-hmi-text-primary dark:text-hmi-dark-text-primary"></h2>
+            <p className="text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
+              Real-time charts, alarm system, and historical data visualization
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
