@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import { useUpdateStore } from "@/stores/useUpdateStore";
 
 export function useServiceWorker() {
+  const setUpdate = useUpdateStore((state) => state.setUpdate);
+
   useEffect(() => {
     if (!("serviceWorker" in navigator)) {
       console.warn("Service Worker not supported in this browser");
@@ -42,8 +45,8 @@ export function useServiceWorker() {
                 console.log(
                   "[App] New Service Worker available, ready to activate"
                 );
-                // TODO: Show update notification
-                // dispatch an action to show "Update available" banner
+                // Trigger update notification
+                setUpdate(registration);
               }
             });
           }
@@ -58,7 +61,7 @@ export function useServiceWorker() {
     };
 
     registerServiceWorker();
-  }, []);
+  }, [setUpdate]);
 }
 
 /**

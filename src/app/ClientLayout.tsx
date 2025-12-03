@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useServiceWorker } from "@/hooks/useServiceWorker";
 import { useThemeStore } from "@/stores/useThemeStore";
+import { UpdateNotification } from "@/components/ui/UpdateNotification";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   // Register Service Worker
@@ -18,5 +19,10 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     }
   }, [isDarkMode]);
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <UpdateNotification />
+    </>
+  );
 }
