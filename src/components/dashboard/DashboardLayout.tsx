@@ -10,6 +10,8 @@ import { PressureDisplay } from "@/components/metrics/PressureDisplay";
 import { AlarmBanner } from "@/components/alarms/AlarmBanner";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { NotificationBell } from "@/components/ui/NotificationBell";
+import { WiFiStatus } from "@/components/ui/WiFiStatus";
+import { OfflineModal } from "@/components/ui/OfflineModal";
 
 export function DashboardLayout() {
   // Initialize WebSocket and IndexedDB
@@ -32,21 +34,26 @@ export function DashboardLayout() {
             </p>
           </div>
 
-          {/* Connection Status, Notifications, and Theme Toggle */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+          {/* WiFi Status, Server Connection, Notifications, and Theme Toggle */}
+          <div className="flex items-center gap-6">
+            {/* WiFi Status */}
+            <WiFiStatus />
+
+            {/* Server Connection Status */}
+            <div className="flex items-center gap-3">
               <div
-                className={`h-3 w-3 rounded-full ${
+                className={`h-4 w-4 rounded-full ${
                   isConnected ? "bg-hmi-status-ok" : "bg-hmi-status-offline"
                 }`}
               />
-              <span className="text-sm font-medium text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
-                {status === "connected" && "Connected"}
+              <span className="text-base font-medium text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
+                {status === "connected" && "Server Connected"}
                 {status === "connecting" && "Connecting..."}
-                {status === "disconnected" && "Disconnected"}
-                {status === "error" && "Error"}
+                {status === "disconnected" && "Server Disconnected"}
+                {status === "error" && "Connection Error"}
               </span>
             </div>
+            <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
             <NotificationBell />
             <ThemeToggle />
           </div>
@@ -72,6 +79,7 @@ export function DashboardLayout() {
           </div>
         </div>
       </main>
+      <OfflineModal />
     </div>
   );
 }

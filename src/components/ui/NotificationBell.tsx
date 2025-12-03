@@ -16,10 +16,10 @@ export function NotificationBell() {
         className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         aria-label="Notifications"
       >
-        <Bell className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <Bell className="w-7 h-7 text-gray-700 dark:text-gray-300" />
 
         {unacknowledgedCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold text-white bg-red-600 rounded-full">
+          <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[24px] h-6 px-2 text-sm font-bold text-white bg-red-600 rounded-full">
             {unacknowledgedCount > 99 ? '99+' : unacknowledgedCount}
           </span>
         )}
