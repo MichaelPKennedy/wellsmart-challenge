@@ -1,0 +1,15 @@
+{
+  "name": "WellSmart SCADA Dashboard",
+  "short_name": "WellSmart",
+  "description": "Real-time industrial process monitoring with offline-first capabilities",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8f9fa",
+  "theme_color": "#0d6efd",
+  "categories": ["productivity", "utilities"],
+  "screenshots": [],
+  "icons": [],
+  "shortcuts": []
+}
