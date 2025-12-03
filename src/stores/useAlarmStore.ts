@@ -1,103 +1,130 @@
-import { create } from "zustand";
-import { Alarm } from "@/types/alarm";
+import { create } from 'zustand';
+import { Alarm } from '@/types/alarm';
 
 interface AlarmState {
-  // Alarms
-  activeAlarms: Alarm[];
-  recentAlarms: Alarm[];
+  // All alarms (history)
+  allAlarms: Alarm[];
+
+  // Current sensor alarm state
   currentSensorAlarm: boolean;
+  currentAlarmId: string | null; // ID of current active sensor alarm
 
   // Actions
-  addAlarm: (alarm: Alarm) => void;
+  addAlarm: (alarm: Omit<Alarm, 'id'>) => void;
   acknowledgeAlarm: (alarmId: string) => void;
-  clearAlarm: (alarmId: string) => void;
-  loadRecentAlarms: (alarms: Alarm[]) => void;
-  setSensorAlarm: (active: boolean) => void;
+  updateAlarmStatus: (sensorAlarm: boolean, value?: number) => void;
+  loadAlarmsFromDB: (alarms: Alarm[]) => void;
 
   // Selectors
-  getActiveAlarmCount: () => number;
-  hasCriticalAlarm: () => boolean;
-  getLastAlarm: () => Alarm | null;
+  getUnacknowledgedCount: () => number;
+  getActiveAlarms: () => Alarm[];
+  getRecentAlarms: (limit?: number) => Alarm[];
+  getCurrentAlarm: () => Alarm | null;
 }
 
 export const useAlarmStore = create<AlarmState>((set, get) => ({
-  activeAlarms: [],
-  recentAlarms: [],
+  allAlarms: [],
   currentSensorAlarm: false,
+  currentAlarmId: null,
 
-  addAlarm: (alarm) =>
-    set((state) => {
-      // Only track unacknowledged alarms as active
-      const newActiveAlarms = alarm.acknowledged
-        ? state.activeAlarms
-        : [alarm, ...state.activeAlarms];
+  addAlarm: (alarmData) => {
+    const alarm: Alarm = {
+      ...alarmData,
+      id: crypto.randomUUID(),
+    };
 
-      // Keep track of recent alarms (last 50)
-      const newRecentAlarms = [alarm, ...state.recentAlarms].slice(0, 50);
-
-      return {
-        activeAlarms: newActiveAlarms,
-        recentAlarms: newRecentAlarms,
-      };
-    }),
-
-  acknowledgeAlarm: (alarmId) =>
     set((state) => ({
-      activeAlarms: state.activeAlarms.filter((alarm) => alarm.id !== alarmId),
-      recentAlarms: state.recentAlarms.map((alarm) =>
-        alarm.id === alarmId ? { ...alarm, acknowledged: true } : alarm
-      ),
-    })),
+      allAlarms: [alarm, ...state.allAlarms],
+    }));
 
-  clearAlarm: (alarmId) =>
+    return alarm.id;
+  },
+
+  acknowledgeAlarm: (alarmId) => {
     set((state) => ({
-      activeAlarms: state.activeAlarms.filter((alarm) => alarm.id !== alarmId),
-      recentAlarms: state.recentAlarms.map((alarm) =>
+      allAlarms: state.allAlarms.map((alarm) =>
         alarm.id === alarmId
           ? {
               ...alarm,
               acknowledged: true,
-              resolvedAt: new Date().toISOString(),
+              acknowledgedAt: new Date().toISOString(),
             }
           : alarm
       ),
-    })),
+    }));
+  },
 
-  loadRecentAlarms: (alarms) =>
-    set({
-      recentAlarms: alarms,
-      activeAlarms: alarms.filter((alarm) => !alarm.acknowledged),
-    }),
+  updateAlarmStatus: (sensorAlarm, value) => {
+    const state = get();
 
-  setSensorAlarm: (active) => {
-    set({ currentSensorAlarm: active });
-
-    // If sensor alarm is triggered, add a new alarm entry
-    if (active) {
-      const alarm: Alarm = {
-        id: crypto.randomUUID(),
+    // Sensor alarm just triggered
+    if (sensorAlarm && !state.currentSensorAlarm) {
+      const alarmId = get().addAlarm({
         timestamp: new Date().toISOString(),
-        message: "Sensor alarm triggered",
-        severity: "critical",
+        message: 'Sensor alarm triggered',
+        severity: 'critical',
+        value,
         acknowledged: false,
-      };
+        isActive: true,
+      });
 
-      get().addAlarm(alarm);
+      set({
+        currentSensorAlarm: true,
+        currentAlarmId: alarmId,
+      });
+    }
+    // Sensor alarm cleared
+    else if (!sensorAlarm && state.currentSensorAlarm) {
+      // Mark current alarm as cleared
+      if (state.currentAlarmId) {
+        set((state) => ({
+          allAlarms: state.allAlarms.map((alarm) =>
+            alarm.id === state.currentAlarmId
+              ? {
+                  ...alarm,
+                  isActive: false,
+                  clearedAt: new Date().toISOString(),
+                }
+              : alarm
+          ),
+          currentSensorAlarm: false,
+          currentAlarmId: null,
+        }));
+      } else {
+        set({
+          currentSensorAlarm: false,
+          currentAlarmId: null,
+        });
+      }
     }
   },
 
-  getActiveAlarmCount: () => {
-    const state = get();
-    return state.activeAlarms.length;
+  loadAlarmsFromDB: (alarms) => {
+    set({ allAlarms: alarms });
   },
 
-  hasCriticalAlarm: () => {
+  getUnacknowledgedCount: () => {
     const state = get();
-    return state.activeAlarms.some((alarm) => alarm.severity === "critical");
+    return state.allAlarms.filter((alarm) => !alarm.acknowledged).length;
   },
 
-  getLastAlarm: () => {
+  getActiveAlarms: () => {
     const state = get();
-    return state.recentAlarms.length > 0 ? state.recentAlarms[0] : null;
+    return state.allAlarms.filter((alarm) => alarm.isActive);
+  },
+
+  getRecentAlarms: (limit = 50) => {
+    const state = get();
+    return state.allAlarms.slice(0, limit);
+  },
+
+  getCurrentAlarm: () => {
+    const state = get();
+    if (state.currentAlarmId) {
+      const alarm = state.allAlarms.find((a) => a.id === state.currentAlarmId);
+      // Only return if alarm exists and is not acknowledged
+      return alarm && !alarm.acknowledged ? alarm : null;
+    }
+    return null;
   },
 }));

@@ -11,7 +11,7 @@ export function useWebSocket(wsUrl?: string) {
   const setStatus = useConnectionStore((state) => state.setStatus);
   const setOnline = useConnectionStore((state) => state.setOnline);
   const recordMessage = useConnectionStore((state) => state.recordMessage);
-  const setSensorAlarm = useAlarmStore((state) => state.setSensorAlarm);
+  const updateAlarmStatus = useAlarmStore((state) => state.updateAlarmStatus);
 
   useEffect(() => {
     // Get WebSocket URL from prop or environment variable (client-side only)
@@ -53,10 +53,8 @@ export function useWebSocket(wsUrl?: string) {
           setStatus('connected');
           setOnline(true);
 
-          // Handle sensor alarm
-          if (data.sensor_alarm) {
-            setSensorAlarm(true);
-          }
+          // Handle sensor alarm (log all alarm events)
+          updateAlarmStatus(data.sensor_alarm, data.pressure_psi);
         },
         error: (err) => {
           console.error('[WebSocket] Connection error:', err);
@@ -95,5 +93,5 @@ export function useWebSocket(wsUrl?: string) {
         subscriptionRef.current.unsubscribe();
       }
     };
-  }, [addDataPoint, setStatus, setOnline, recordMessage, setSensorAlarm]);
+  }, [addDataPoint, setStatus, setOnline, recordMessage, updateAlarmStatus]);
 }

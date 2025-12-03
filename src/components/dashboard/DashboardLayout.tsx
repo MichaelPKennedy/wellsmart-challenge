@@ -9,6 +9,7 @@ import { PowerMeter } from "@/components/metrics/PowerMeter";
 import { PressureDisplay } from "@/components/metrics/PressureDisplay";
 import { AlarmBanner } from "@/components/alarms/AlarmBanner";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 
 export function DashboardLayout() {
   // Initialize WebSocket and IndexedDB
@@ -31,7 +32,7 @@ export function DashboardLayout() {
             </p>
           </div>
 
-          {/* Connection Status and Theme Toggle */}
+          {/* Connection Status, Notifications, and Theme Toggle */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <div
@@ -46,6 +47,7 @@ export function DashboardLayout() {
                 {status === "error" && "Error"}
               </span>
             </div>
+            <NotificationBell />
             <ThemeToggle />
           </div>
         </div>
