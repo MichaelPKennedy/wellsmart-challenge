@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning style={{ backgroundColor: '#0a0a0a', colorScheme: 'dark' }}>
+    <html lang="en" suppressHydrationWarning className="dark" style={{ backgroundColor: '#0a0a0a', colorScheme: 'dark' }}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -44,11 +44,14 @@ export default function RootLayout({
                   const theme = localStorage.getItem('theme');
                   if (theme === 'light') {
                     document.documentElement.classList.remove('dark');
+                    document.documentElement.style.backgroundColor = '#ffffff';
                   } else {
                     document.documentElement.classList.add('dark');
+                    document.documentElement.style.backgroundColor = '#0a0a0a';
                   }
                 } catch (e) {
                   document.documentElement.classList.add('dark');
+                  document.documentElement.style.backgroundColor = '#0a0a0a';
                 }
               })();
             `,
@@ -63,6 +66,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ backgroundColor: '#0a0a0a' }}
       >
         <ClientLayout>{children}</ClientLayout>
       </body>
