@@ -19,10 +19,17 @@ function getDataByTimeWindow(
   timeWindow: TimeWindow
 ): ProcessDataPoint[] {
   const timeAgo = Date.now() - timeWindow * 60 * 1000;
-  return historicalData.filter((point) => {
+  const filtered = historicalData.filter((point) => {
     const timestamp = new Date(point.timestamp).getTime();
     return timestamp >= timeAgo;
   });
+
+  // Debug logging
+  if (filtered.length !== historicalData.length) {
+    console.log(`[FlowGauge] ${timeWindow}m window: ${filtered.length}/${historicalData.length} points. Cutoff: ${new Date(timeAgo).toISOString()}`);
+  }
+
+  return filtered;
 }
 
 function drawFlowGauge(

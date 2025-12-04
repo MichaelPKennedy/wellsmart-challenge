@@ -4,13 +4,11 @@ import { initializeDataStream } from "@/lib/websocket/dataStream.service";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useConnectionStore } from "@/stores/useConnectionStore";
 import { useAlarmStore } from "@/stores/useAlarmStore";
-import { useSamplingRateStore } from "@/stores/useSamplingRateStore";
 
 export function useWebSocket(wsUrl?: string) {
-  const subscriptionRef = useRef<Subscription | null>(null);
-  const dataStreamRef = useRef<ReturnType<typeof initializeDataStream> | null>(
-    null
-  );
+  const uiSubscriptionRef = useRef<Subscription | null>(null);
+  const storageSubscriptionRef = useRef<Subscription | null>(null);
+  const setCurrentData = useProcessStore((state) => state.setCurrentData);
   const addDataPoint = useProcessStore((state) => state.addDataPoint);
   const setStatus = useConnectionStore((state) => state.setStatus);
   const setOnline = useConnectionStore((state) => state.setOnline);
@@ -19,7 +17,6 @@ export function useWebSocket(wsUrl?: string) {
   );
   const recordMessage = useConnectionStore((state) => state.recordMessage);
   const updateAlarmStatus = useAlarmStore((state) => state.updateAlarmStatus);
-  const samplingRate = useSamplingRateStore((state) => state.samplingRate);
 
   useEffect(() => {
     // Get WebSocket URL from prop or environment variable (client-side only)
@@ -41,13 +38,12 @@ export function useWebSocket(wsUrl?: string) {
     try {
       // Initialize data stream
       const dataStream = initializeDataStream(wsUrlToUse);
-      dataStreamRef.current = dataStream;
 
-      // Subscribe to data stream
-      subscriptionRef.current = dataStream.subscribe({
+      // Subscribe to UI stream (100ms) - updates gauges only
+      uiSubscriptionRef.current = dataStream.dataStream$.subscribe({
         next: (data) => {
-          // Update process store
-          addDataPoint({
+          // Update current data for gauges
+          setCurrentData({
             flow_gpm: data.flow_gpm,
             power_kW: data.power_kW,
             pressure_psi: data.pressure_psi,
@@ -68,12 +64,31 @@ export function useWebSocket(wsUrl?: string) {
           updateAlarmStatus(data.sensor_alarm, data.pressure_psi);
         },
         error: (err) => {
-          console.error("[WebSocket] Connection error:", err);
+          console.error("[WebSocket] UI stream error:", err);
           setStatus("error");
         },
         complete: () => {
-          console.log("[WebSocket] Stream completed");
+          console.log("[WebSocket] UI stream completed");
           setStatus("disconnected");
+        },
+      });
+
+      // Subscribe to storage stream (500ms) - updates historical data for charts
+      storageSubscriptionRef.current = dataStream.storageStream$.subscribe({
+        next: (data) => {
+          // Update historical data for charts
+          addDataPoint({
+            flow_gpm: data.flow_gpm,
+            power_kW: data.power_kW,
+            pressure_psi: data.pressure_psi,
+            pressure_bar: data.pressure_bar,
+            sensor_alarm: data.sensor_alarm,
+            timestamp: data.timestamp,
+            message_type: "process_data",
+          });
+        },
+        error: (err) => {
+          console.error("[WebSocket] Storage stream error:", err);
         },
       });
     } catch (err) {
@@ -100,11 +115,15 @@ export function useWebSocket(wsUrl?: string) {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
 
-      if (subscriptionRef.current) {
-        subscriptionRef.current.unsubscribe();
+      if (uiSubscriptionRef.current) {
+        uiSubscriptionRef.current.unsubscribe();
+      }
+      if (storageSubscriptionRef.current) {
+        storageSubscriptionRef.current.unsubscribe();
       }
     };
   }, [
+    setCurrentData,
     addDataPoint,
     setStatus,
     setOnline,
@@ -113,12 +132,4 @@ export function useWebSocket(wsUrl?: string) {
     updateAlarmStatus,
     wsUrl,
   ]);
-
-  // Update sampling rate when it changes
-  useEffect(() => {
-    if (dataStreamRef.current) {
-      console.log("[WebSocket] Updating sampling rate to:", samplingRate, "ms");
-      dataStreamRef.current.setSamplingRate(samplingRate);
-    }
-  }, [samplingRate]);
 }

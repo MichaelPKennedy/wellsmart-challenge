@@ -6,7 +6,6 @@ import { ProcessDataPoint } from "@/types/process";
 import type { EChartsOption } from "echarts";
 
 export type TimeWindow = 5 | 10 | 20; // minutes
-const MAX_DISPLAY_POINTS = 100; // Maximum points to display on sparkline
 
 interface SparklineChartProps {
   data: ProcessDataPoint[];
@@ -33,7 +32,7 @@ export function SparklineChart({
   height = 110,
   isDarkMode = false,
 }: SparklineChartProps) {
-  // Calculate dynamic consolidation to maintain exactly MAX_DISPLAY_POINTS
+  // Convert data to chart format (stored at 500ms, so no bucketing needed)
   const chartData = useMemo(() => {
     if (data.length === 0) return [];
 
@@ -46,35 +45,39 @@ export function SparklineChart({
         ]
     );
 
-    if (rawPoints.length <= MAX_DISPLAY_POINTS) {
-      return rawPoints;
+    // Add synthetic point at start of time window for horizontal line effect
+    const now = Date.now();
+    const windowStart = now - timeWindow * 60 * 1000;
+    const firstDataPoint = rawPoints[0];
+    const shouldAddStartPoint =
+      firstDataPoint && firstDataPoint[0] > windowStart;
+
+    if (shouldAddStartPoint) {
+      // Add point at window start with same value as first real data point
+      rawPoints.unshift([windowStart, firstDataPoint[1]]);
     }
 
-    // Calculate consolidation interval to achieve MAX_DISPLAY_POINTS
-    const consolidationFactor = Math.ceil(
-      rawPoints.length / MAX_DISPLAY_POINTS
-    );
-
-    // Group points by consolidation factor and average
-    const consolidated: [number, number][] = [];
-    for (let i = 0; i < rawPoints.length; i += consolidationFactor) {
-      const bucket = rawPoints.slice(i, i + consolidationFactor);
-      const avgTimestamp = Math.round(
-        bucket.reduce((sum, p) => sum + p[0], 0) / bucket.length
-      );
-      const avgValue = bucket.reduce((sum, p) => sum + p[1], 0) / bucket.length;
-      consolidated.push([avgTimestamp, avgValue]);
-    }
-
-    return consolidated;
-  }, [data, metricKey]);
+    return rawPoints;
+  }, [data, metricKey, timeWindow]);
 
   // Use consistent cyan color for sparkline
   const lineColor = isDarkMode ? "#22d3ee" : "#06b6d4"; // Cyan
 
+  // Calculate fixed time range for x-axis
+  const timeRange = useMemo(() => {
+    const now = Date.now();
+    const windowMs = timeWindow * 60 * 1000; // Convert minutes to milliseconds
+    return {
+      min: now - windowMs,
+      max: now,
+    };
+  }, [timeWindow, data]); // Re-calculate when data updates to keep "now" current
+
   const option: EChartsOption = useMemo(
     () => ({
-      animation: false,
+      animation: true,
+      animationDuration: 1000,
+      animationEasing: "linear",
       backgroundColor: "transparent",
       grid: {
         left: 20,
@@ -84,6 +87,8 @@ export function SparklineChart({
       },
       xAxis: {
         type: "time",
+        min: timeRange.min,
+        max: timeRange.max,
         axisLine: { show: false },
         axisTick: { show: false },
         axisLabel: { show: false },
@@ -102,7 +107,6 @@ export function SparklineChart({
         {
           type: "line",
           data: chartData,
-          sampling: "lttb",
           lineStyle: {
             color: lineColor,
             width: 2.5,
@@ -163,7 +167,7 @@ export function SparklineChart({
         },
       },
     }),
-    [chartData, lineColor, thresholds, unit, isDarkMode]
+    [chartData, lineColor, thresholds, unit, isDarkMode, timeRange]
   );
 
   const TIME_WINDOW_OPTIONS: { value: TimeWindow; label: string }[] = [

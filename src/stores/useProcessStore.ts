@@ -47,8 +47,8 @@ export const useProcessStore = create<ProcessState>((set, get) => ({
         clientTimestamp: performance.now(),
       };
 
-      // Keep last 1000 points in memory for charts
-      const newHistory = [...state.historicalData, dataPoint].slice(-1000);
+      // Keep last 2400 points in memory (~20 minutes at 500ms = 2Hz)
+      const newHistory = [...state.historicalData, dataPoint].slice(-2400);
 
       // Calculate statistics
       const flowValues = newHistory.map((d) => d.flow_gpm);
@@ -70,6 +70,7 @@ export const useProcessStore = create<ProcessState>((set, get) => ({
 
   loadHistoricalData: (data) =>
     set(() => {
+      console.log(`[ProcessStore] Loaded ${data.length} historical data points`);
       const flowValues = data.map((d) => d.flow_gpm);
       const powerValues = data.map((d) => d.power_kW);
 
@@ -80,7 +81,7 @@ export const useProcessStore = create<ProcessState>((set, get) => ({
       const peakPower = powerValues.length > 0 ? Math.max(...powerValues) : 0;
 
       return {
-        historicalData: data.slice(-1000),
+        historicalData: data.slice(-2400),
         averageFlow,
         peakPower,
         isLoading: false,

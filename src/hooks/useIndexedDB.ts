@@ -15,12 +15,19 @@ export function useIndexedDB() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load recent readings
-        const readings = await getRecentReadings(1000);
+        // Load recent readings (2400 points = ~20 minutes at 500ms = 2Hz)
+        const readings = await getRecentReadings(2400);
+        console.log(`[IndexedDB] Found ${readings.length} readings in database`);
         if (readings.length > 0) {
+          // Log timestamp range
+          const timestamps = readings.map(r => new Date(r.timestamp).getTime());
+          const oldest = Math.min(...timestamps);
+          const newest = Math.max(...timestamps);
+          console.log(`[IndexedDB] Date range: ${new Date(oldest).toISOString()} to ${new Date(newest).toISOString()}`);
+
           loadHistoricalData(readings);
-          console.log(`Loaded ${readings.length} historical readings from IndexedDB`);
         } else {
+          console.log(`[IndexedDB] No historical data found, starting fresh`);
           setLoading(false);
         }
 
