@@ -182,7 +182,7 @@ export function SparklineChart({
             onClick={() => onTimeWindowChange(opt.value)}
             className={`px-2.5 py-1 text-sm font-medium rounded transition-colors ${
               timeWindow === opt.value
-                ? "bg-blue-500 text-white"
+                ? "bg-cyan-600 dark:bg-cyan-500 text-white"
                 : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600"
             }`}
           >

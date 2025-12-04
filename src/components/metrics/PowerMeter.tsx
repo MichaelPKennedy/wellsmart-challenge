@@ -145,7 +145,7 @@ export function PowerMeter() {
           unit="kW"
           timeWindow={timeWindow}
           onTimeWindowChange={setTimeWindow}
-          height={150}
+          height={130}
           isDarkMode={isDarkMode}
         />
       </div>
