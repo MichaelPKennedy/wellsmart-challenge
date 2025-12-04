@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 interface ThemeState {
   isDarkMode: boolean;
@@ -7,15 +6,8 @@ interface ThemeState {
   setDarkMode: (isDark: boolean) => void;
 }
 
-export const useThemeStore = create<ThemeState>()(
-  persist(
-    (set) => ({
-      isDarkMode: true,
-      toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
-      setDarkMode: (isDark: boolean) => set({ isDarkMode: isDark }),
-    }),
-    {
-      name: "wellsmart-theme-store",
-    }
-  )
-);
+export const useThemeStore = create<ThemeState>((set) => ({
+  isDarkMode: true,
+  toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+  setDarkMode: (isDark: boolean) => set({ isDarkMode: isDark }),
+}));

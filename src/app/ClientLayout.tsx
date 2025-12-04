@@ -1,28 +1,37 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTheme } from "next-themes";
 import { useServiceWorker } from "@/hooks/useServiceWorker";
 import { useThemeStore } from "@/stores/useThemeStore";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { UpdateNotification } from "@/components/ui/UpdateNotification";
 
-export function ClientLayout({ children }: { children: React.ReactNode }) {
+function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   // Register Service Worker
   useServiceWorker();
 
-  const isDarkMode = useThemeStore((state) => state.isDarkMode);
+  const { theme } = useTheme();
+  const setDarkMode = useThemeStore((state) => state.setDarkMode);
 
+  // Sync next-themes with Zustand store
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
+    const isDark = theme === "dark";
+    setDarkMode(isDark);
+  }, [theme, setDarkMode]);
 
   return (
     <>
       {children}
       <UpdateNotification />
     </>
+  );
+}
+
+export function ClientLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider>
+      <ClientLayoutContent>{children}</ClientLayoutContent>
+    </ThemeProvider>
   );
 }

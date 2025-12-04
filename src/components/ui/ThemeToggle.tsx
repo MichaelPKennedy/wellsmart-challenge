@@ -1,15 +1,15 @@
 'use client';
 
-import { useThemeStore } from '@/stores/useThemeStore';
+import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
 
 export function ThemeToggle() {
-  const isDarkMode = useThemeStore((state) => state.isDarkMode);
-  const toggleDarkMode = useThemeStore((state) => state.toggleDarkMode);
+  const { theme, setTheme } = useTheme();
+  const isDarkMode = theme === 'dark';
 
   return (
     <button
-      onClick={toggleDarkMode}
+      onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
       className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 transition-colors"
       aria-label="Toggle theme"
       title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
