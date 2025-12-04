@@ -1,5 +1,5 @@
 // Build: 2025-12-04T10:52:00
-const CACHE_NAME = "wellsmart-v3";
+const CACHE_NAME = "wellsmart-v4";
 const RUNTIME_CACHE = "wellsmart-runtime-v2";
 const STATIC_ASSETS = ["/", "/index.html", "/favicon.ico"];
 

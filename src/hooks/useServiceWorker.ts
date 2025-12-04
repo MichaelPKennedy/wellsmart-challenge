@@ -51,11 +51,8 @@ export function useServiceWorker() {
             console.log("[App] New worker state:", newWorker.state);
             newWorker.addEventListener("statechange", () => {
               console.log("[App] New worker state changed to:", newWorker.state);
-              console.log("[App] Has controller:", !!navigator.serviceWorker.controller);
-              if (
-                newWorker.state === "installed" &&
-                navigator.serviceWorker.controller
-              ) {
+              console.log("[App] Waiting worker:", !!registration.waiting);
+              if (newWorker.state === "installed" && registration.waiting) {
                 console.log(
                   "[App] ✅ New Service Worker available, ready to activate"
                 );
