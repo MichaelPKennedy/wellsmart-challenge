@@ -125,18 +125,18 @@ export function SessionStats() {
 
   return (
     <div className="mt-8">
-      <div className="rounded-lg border border-hmi-bg-border dark:border-hmi-dark-bg-border bg-white dark:bg-hmi-dark-bg-card p-6 transition-colors duration-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <h2 className="text-lg font-semibold text-hmi-text-primary dark:text-hmi-dark-text-primary">
+      <div className="rounded-lg border border-hmi-bg-border dark:border-hmi-dark-bg-border bg-white dark:bg-hmi-dark-bg-card p-4 sm:p-6 transition-colors duration-200">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <h2 className="text-lg font-semibold text-hmi-text-primary dark:text-hmi-dark-text-primary whitespace-nowrap">
               Session Statistics
             </h2>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {timeframeOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => setSelectedTimeframe(option.value)}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  className={`px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                     selectedTimeframe === option.value
                       ? "bg-cyan-600 dark:bg-cyan-500 text-white"
                       : "bg-gray-100 dark:bg-gray-800 text-hmi-text-secondary dark:text-hmi-dark-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -147,10 +147,10 @@ export function SessionStats() {
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={handleManualRefresh}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               title="Refresh now"
             >
               <svg
@@ -166,29 +166,32 @@ export function SessionStats() {
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 />
               </svg>
+              <span className="hidden xs:inline font-mono text-xs sm:text-sm">
+                {secondsUntilRefresh}s
+              </span>
             </button>
-            <span className="font-mono text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
-              Refreshing in {secondsUntilRefresh}s
+            <span className="font-mono text-xs sm:text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary xs:hidden">
+              {secondsUntilRefresh}s
             </span>
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="flex flex-col p-3 rounded-md bg-gray-50 dark:bg-gray-800/50"
+              className="flex flex-col p-2.5 sm:p-3 rounded-md bg-gray-50 dark:bg-gray-800/50"
             >
               <span className="text-xs text-hmi-text-secondary dark:text-hmi-dark-text-secondary mb-1">
                 {stat.label}
               </span>
               <div className="flex items-baseline gap-1">
                 <span
-                  className={`text-2xl font-bold font-mono ${stat.color}`}
+                  className={`text-xl sm:text-2xl font-bold font-mono ${stat.color}`}
                 >
                   {stat.value}
                 </span>
                 {stat.unit && (
-                  <span className="text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
+                  <span className="text-xs sm:text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
                     {stat.unit}
                   </span>
                 )}
