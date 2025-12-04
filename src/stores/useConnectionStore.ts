@@ -5,6 +5,8 @@ type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 interface ConnectionState {
   status: ConnectionStatus;
   isOnline: boolean;
+  hasAttemptedConnection: boolean;
+  modalDismissed: boolean;
   lastMessageTime: number | null;
   lastErrorTime: number | null;
   lastErrorMessage: string | null;
@@ -20,6 +22,9 @@ interface ConnectionState {
   recordMessage: () => void;
   incrementReconnectAttempts: () => void;
   resetReconnectAttempts: () => void;
+  setHasAttemptedConnection: (attempted: boolean) => void;
+  dismissModal: () => void;
+  resetModalDismissal: () => void;
 
   // Selectors
   isConnected: () => boolean;
@@ -29,13 +34,15 @@ interface ConnectionState {
 export const useConnectionStore = create<ConnectionState>((set, get) => ({
   status: 'connecting',
   isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
+  hasAttemptedConnection: false,
+  modalDismissed: false,
   lastMessageTime: null,
   lastErrorTime: null,
   lastErrorMessage: null,
   reconnectAttempts: 0,
   latency: null,
 
-  setStatus: (status) => set({ status }),
+  setStatus: (status) => set({ status, modalDismissed: false }),
 
   setOnline: (online) => set({ isOnline: online }),
 
@@ -46,6 +53,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       status: 'error',
       lastErrorTime: Date.now(),
       lastErrorMessage: message,
+      modalDismissed: false,
     }),
 
   clearError: () =>
@@ -67,6 +75,13 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       lastErrorTime: null,
       lastErrorMessage: null,
     }),
+
+  setHasAttemptedConnection: (attempted) =>
+    set({ hasAttemptedConnection: attempted }),
+
+  dismissModal: () => set({ modalDismissed: true }),
+
+  resetModalDismissal: () => set({ modalDismissed: false }),
 
   isConnected: () => {
     const state = get();

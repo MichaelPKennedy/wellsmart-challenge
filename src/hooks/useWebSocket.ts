@@ -12,6 +12,7 @@ export function useWebSocket(wsUrl?: string) {
   const addDataPoint = useProcessStore((state) => state.addDataPoint);
   const setStatus = useConnectionStore((state) => state.setStatus);
   const setOnline = useConnectionStore((state) => state.setOnline);
+  const setHasAttemptedConnection = useConnectionStore((state) => state.setHasAttemptedConnection);
   const recordMessage = useConnectionStore((state) => state.recordMessage);
   const updateAlarmStatus = useAlarmStore((state) => state.updateAlarmStatus);
   const samplingRate = useSamplingRateStore((state) => state.samplingRate);
@@ -28,6 +29,7 @@ export function useWebSocket(wsUrl?: string) {
     }
 
     console.log('[WebSocket] Initializing with URL:', wsUrlToUse);
+    setHasAttemptedConnection(true);
     setStatus('connecting');
 
     try {
@@ -97,7 +99,7 @@ export function useWebSocket(wsUrl?: string) {
         subscriptionRef.current.unsubscribe();
       }
     };
-  }, [addDataPoint, setStatus, setOnline, recordMessage, updateAlarmStatus, wsUrl]);
+  }, [addDataPoint, setStatus, setOnline, setHasAttemptedConnection, recordMessage, updateAlarmStatus, wsUrl]);
 
   // Update sampling rate when it changes
   useEffect(() => {

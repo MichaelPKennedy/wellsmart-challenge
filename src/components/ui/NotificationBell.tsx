@@ -33,8 +33,8 @@ export function NotificationBell() {
             onClick={() => setShowPanel(false)}
           />
 
-          {/* Panel */}
-          <div className="absolute right-0 mt-2 z-50">
+          {/* Panel - Fixed positioning with viewport padding */}
+          <div className="fixed top-16 z-50 left-4 right-4 md:left-auto md:right-6">
             <AlarmHistoryPanel />
           </div>
         </>
