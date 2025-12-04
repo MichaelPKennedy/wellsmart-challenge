@@ -137,7 +137,7 @@ export function PowerMeter() {
           border: "none",
         }}
       />
-      <div className="w-full px-4 pb-4">
+      <div className="w-full px-4 pb-4 mt-6">
         <SparklineChart
           data={filteredData}
           metricKey="power_kW"
@@ -145,7 +145,7 @@ export function PowerMeter() {
           unit="kW"
           timeWindow={timeWindow}
           onTimeWindowChange={setTimeWindow}
-          height={110}
+          height={150}
           isDarkMode={isDarkMode}
         />
       </div>

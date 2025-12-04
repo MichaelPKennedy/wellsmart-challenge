@@ -29,7 +29,7 @@ export function SparklineChart({
   unit,
   timeWindow,
   onTimeWindowChange,
-  height = 110,
+  height = 130,
   isDarkMode = false,
 }: SparklineChartProps) {
   // Convert data to chart format
@@ -123,7 +123,7 @@ export function SparklineChart({
             label: {
               position: "end",
               color: isDarkMode ? "#94a3b8" : "#64748b",
-              fontSize: 10,
+              fontSize: 13,
               fontFamily: "JetBrains Mono, monospace",
               padding: [2, 4],
             },
@@ -153,7 +153,7 @@ export function SparklineChart({
           const date = new Date(point.value[0]);
           const value = point.value[1].toFixed(1);
           return `
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px;">
               <div>${date.toLocaleTimeString()}</div>
               <div style="font-weight: bold; margin-top: 4px;">
                 ${value} ${unit}
@@ -173,14 +173,14 @@ export function SparklineChart({
   ];
 
   return (
-    <div className="relative">
-      {/* Time Window Selector - Left Side */}
-      <div className="absolute top-1 left-1 z-10 flex gap-1">
+    <div className="flex flex-col gap-2">
+      {/* Time Window Selector - Above Chart */}
+      <div className="flex gap-1">
         {TIME_WINDOW_OPTIONS.map((opt) => (
           <button
             key={opt.value}
             onClick={() => onTimeWindowChange(opt.value)}
-            className={`px-2 py-0.5 text-[10px] font-medium rounded transition-colors ${
+            className={`px-2.5 py-1 text-sm font-medium rounded transition-colors ${
               timeWindow === opt.value
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600"

@@ -142,7 +142,7 @@ export function PressureDisplay() {
           border: "none",
         }}
       />
-      <div className="w-full px-4 pb-4">
+      <div className="w-full px-4 pb-4 mt-2">
         <SparklineChart
           data={filteredData}
           metricKey="pressure_psi"
@@ -150,7 +150,7 @@ export function PressureDisplay() {
           unit="PSI"
           timeWindow={timeWindow}
           onTimeWindowChange={setTimeWindow}
-          height={110}
+          height={150}
           isDarkMode={isDarkMode}
         />
       </div>

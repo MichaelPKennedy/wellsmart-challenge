@@ -135,15 +135,17 @@ export function FlowGauge() {
       status={cardStatus}
       className="flex flex-col items-center justify-center py-4"
     >
-      <canvas
-        ref={canvasRef}
-        style={{
-          display: "block",
-          width: SIZE,
-          height: SIZE,
-          border: "none",
-        }}
-      />
+      <div style={{ height: 280, overflow: 'hidden', display: 'flex', justifyContent: 'center' }}>
+        <canvas
+          ref={canvasRef}
+          style={{
+            display: "block",
+            width: SIZE,
+            height: SIZE,
+            border: "none",
+          }}
+        />
+      </div>
       <div className="w-full px-4 pb-4">
         <SparklineChart
           data={filteredData}
@@ -152,7 +154,7 @@ export function FlowGauge() {
           unit="GPM"
           timeWindow={timeWindow}
           onTimeWindowChange={setTimeWindow}
-          height={110}
+          height={150}
           isDarkMode={isDarkMode}
         />
       </div>
