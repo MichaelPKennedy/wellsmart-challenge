@@ -135,7 +135,7 @@ export function PressureDisplay() {
       width: WIDTH,
       height: HEIGHT,
       enableAnimation: true,
-      animationDuration: 1000,
+      animationDuration: 300,
     }
   );
 
