@@ -5,13 +5,19 @@ import { useCanvasGauge } from "@/hooks/useCanvasGauge";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
-import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
+import {
+  SparklineChart,
+  type TimeWindow,
+} from "@/components/charts/SparklineChart";
 import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
 
 const SIZE = 300;
 const RADIUS = 106;
 
-function getDataByTimeWindow(historicalData: ProcessDataPoint[], timeWindow: TimeWindow): ProcessDataPoint[] {
+function getDataByTimeWindow(
+  historicalData: ProcessDataPoint[],
+  timeWindow: TimeWindow
+): ProcessDataPoint[] {
   const timeAgo = Date.now() - timeWindow * 60 * 1000;
   return historicalData.filter((point) => {
     const timestamp = new Date(point.timestamp).getTime();
@@ -104,18 +110,24 @@ export function FlowGauge() {
   );
 
   // Custom thresholds for sparkline (operating range: 600-1200)
-  const sparklineThresholds = useMemo(() => ({
-    ...DEFAULT_THRESHOLDS.flow_gpm,
-    min: 600,
-    max: 1200,
-  }), []);
+  const sparklineThresholds = useMemo(
+    () => ({
+      ...DEFAULT_THRESHOLDS.flow_gpm,
+      min: 600,
+      max: 1200,
+    }),
+    []
+  );
 
   // Determine status based on current value
   const cardStatus: MetricCardStatus = useMemo(() => {
-    if (currentFlow > sparklineThresholds.max || currentFlow < sparklineThresholds.min) {
-      return 'error';
+    if (
+      currentFlow > sparklineThresholds.max ||
+      currentFlow < sparklineThresholds.min
+    ) {
+      return "error";
     }
-    return 'ok';
+    return "ok";
   }, [currentFlow, sparklineThresholds.max, sparklineThresholds.min]);
 
   useCanvasGauge(
@@ -127,7 +139,7 @@ export function FlowGauge() {
       max: 1200,
       size: SIZE,
       enableAnimation: true,
-      animationDuration: 300,
+      animationDuration: 1000,
     }
   );
 

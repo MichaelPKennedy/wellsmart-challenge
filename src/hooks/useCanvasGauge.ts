@@ -67,8 +67,15 @@ export function useCanvasGauge(
       // Reset animation start time to trigger a new interpolation from current pos
       animationStartRef.current = null;
 
-      // Easing function (ease out cubic for smoother settling)
-      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+      // Spring easing function with slight overshoot and bounce
+      const easeOutElastic = (t: number) => {
+        const c4 = (2 * Math.PI) / 3; // Controls bounce frequency
+        return t === 0
+          ? 0
+          : t === 1
+          ? 1
+          : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+      };
 
       const animate = (timestamp: number) => {
         if (animationStartRef.current === null) {
@@ -77,7 +84,7 @@ export function useCanvasGauge(
 
         const elapsed = timestamp - animationStartRef.current;
         const progress = Math.min(elapsed / duration, 1);
-        const easeProgress = easeOutCubic(progress);
+        const easeProgress = easeOutElastic(progress);
 
         // Interpolate
         const nextValue =

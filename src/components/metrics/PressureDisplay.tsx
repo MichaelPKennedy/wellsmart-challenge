@@ -5,14 +5,20 @@ import { useCanvasGauge } from "@/hooks/useCanvasGauge";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
-import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
+import {
+  SparklineChart,
+  type TimeWindow,
+} from "@/components/charts/SparklineChart";
 import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
 
 const WIDTH = 300;
 const HEIGHT = 175;
 const RADIUS = 106;
 
-function getDataByTimeWindow(historicalData: ProcessDataPoint[], timeWindow: TimeWindow): ProcessDataPoint[] {
+function getDataByTimeWindow(
+  historicalData: ProcessDataPoint[],
+  timeWindow: TimeWindow
+): ProcessDataPoint[] {
   const timeAgo = Date.now() - timeWindow * 60 * 1000;
   return historicalData.filter((point) => {
     const timestamp = new Date(point.timestamp).getTime();
@@ -113,9 +119,9 @@ export function PressureDisplay() {
   const cardStatus: MetricCardStatus = useMemo(() => {
     const thresholds = DEFAULT_THRESHOLDS.pressure_psi;
     if (pressurePsi > thresholds.max || pressurePsi < thresholds.min) {
-      return 'error';
+      return "error";
     }
-    return 'ok';
+    return "ok";
   }, [pressurePsi]);
 
   useCanvasGauge(
@@ -129,7 +135,7 @@ export function PressureDisplay() {
       width: WIDTH,
       height: HEIGHT,
       enableAnimation: true,
-      animationDuration: 300,
+      animationDuration: 1000,
     }
   );
 

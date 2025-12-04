@@ -5,13 +5,19 @@ import { useCanvasGauge } from "@/hooks/useCanvasGauge";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
-import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
+import {
+  SparklineChart,
+  type TimeWindow,
+} from "@/components/charts/SparklineChart";
 import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
 
 const WIDTH = 313;
 const HEIGHT = 125;
 
-function getDataByTimeWindow(historicalData: ProcessDataPoint[], timeWindow: TimeWindow): ProcessDataPoint[] {
+function getDataByTimeWindow(
+  historicalData: ProcessDataPoint[],
+  timeWindow: TimeWindow
+): ProcessDataPoint[] {
   const timeAgo = Date.now() - timeWindow * 60 * 1000;
   return historicalData.filter((point) => {
     const timestamp = new Date(point.timestamp).getTime();
@@ -95,18 +101,24 @@ export function PowerMeter() {
   );
 
   // Custom thresholds for sparkline (operating range: 200-600)
-  const sparklineThresholds = useMemo(() => ({
-    ...DEFAULT_THRESHOLDS.power_kW,
-    min: 200,
-    max: 600,
-  }), []);
+  const sparklineThresholds = useMemo(
+    () => ({
+      ...DEFAULT_THRESHOLDS.power_kW,
+      min: 200,
+      max: 600,
+    }),
+    []
+  );
 
   // Determine status based on current value
   const cardStatus: MetricCardStatus = useMemo(() => {
-    if (currentPower > sparklineThresholds.max || currentPower < sparklineThresholds.min) {
-      return 'error';
+    if (
+      currentPower > sparklineThresholds.max ||
+      currentPower < sparklineThresholds.min
+    ) {
+      return "error";
     }
-    return 'ok';
+    return "ok";
   }, [currentPower, sparklineThresholds.max, sparklineThresholds.min]);
 
   useCanvasGauge(
@@ -120,7 +132,7 @@ export function PowerMeter() {
       width: WIDTH,
       height: HEIGHT,
       enableAnimation: true,
-      animationDuration: 300,
+      animationDuration: 1000,
     }
   );
 
