@@ -20,10 +20,20 @@ export function useServiceWorker() {
         });
 
         console.log("[App] Service Worker registered:", registration);
+        console.log("[App] Initial state - active:", registration.active?.state);
+        console.log("[App] Initial state - waiting:", registration.waiting?.state);
+        console.log("[App] Initial state - installing:", registration.installing?.state);
+
+        // Check if there's already an update waiting
+        if (registration.waiting) {
+          console.log("[App] ⚠️ Update already waiting on page load!");
+          setUpdate(registration);
+        }
 
         // Check for updates periodically
         const checkForUpdates = setInterval(async () => {
           try {
+            console.log("[App] Checking for updates...");
             await registration.update();
           } catch (err) {
             console.warn(
@@ -35,15 +45,19 @@ export function useServiceWorker() {
 
         // Listen for new service worker waiting
         registration.addEventListener("updatefound", () => {
+          console.log("[App] Update found! New worker installing...");
           const newWorker = registration.installing;
           if (newWorker) {
+            console.log("[App] New worker state:", newWorker.state);
             newWorker.addEventListener("statechange", () => {
+              console.log("[App] New worker state changed to:", newWorker.state);
+              console.log("[App] Has controller:", !!navigator.serviceWorker.controller);
               if (
                 newWorker.state === "installed" &&
                 navigator.serviceWorker.controller
               ) {
                 console.log(
-                  "[App] New Service Worker available, ready to activate"
+                  "[App] ✅ New Service Worker available, ready to activate"
                 );
                 // Trigger update notification
                 setUpdate(registration);
