@@ -1,13 +1,23 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useMemo, useState } from "react";
 import { useCanvasGauge } from "@/hooks/useCanvasGauge";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { MetricCard } from "@/components/ui/MetricCard";
+import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
+import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
+import { DEFAULT_THRESHOLDS } from "@/types/process";
 
 const WIDTH = 250;
 const HEIGHT = 100;
+
+function getDataByTimeWindow(historicalData: any[], timeWindow: TimeWindow): any[] {
+  const timeAgo = Date.now() - timeWindow * 60 * 1000;
+  return historicalData.filter((point) => {
+    const timestamp = new Date(point.timestamp).getTime();
+    return timestamp >= timeAgo;
+  });
+}
 
 function drawPowerMeter(
   ctx: CanvasRenderingContext2D,
@@ -72,10 +82,32 @@ function drawPowerMeter(
 
 export function PowerMeter() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [timeWindow, setTimeWindow] = useState<TimeWindow>(5);
   const currentPower = useProcessStore(
     (state) => state.currentData?.power_kW ?? 0
   );
+  const historicalData = useProcessStore((state) => state.historicalData);
   const isDarkMode = useThemeStore((state) => state.isDarkMode);
+
+  const filteredData = useMemo(
+    () => getDataByTimeWindow(historicalData, timeWindow),
+    [historicalData, timeWindow]
+  );
+
+  // Custom thresholds for sparkline (operating range: 200-600)
+  const sparklineThresholds = useMemo(() => ({
+    ...DEFAULT_THRESHOLDS.power_kW,
+    min: 200,
+    max: 600,
+  }), []);
+
+  // Determine status based on current value
+  const cardStatus: MetricCardStatus = useMemo(() => {
+    if (currentPower > sparklineThresholds.max || currentPower < sparklineThresholds.min) {
+      return 'error';
+    }
+    return 'ok';
+  }, [currentPower, sparklineThresholds.max, sparklineThresholds.min]);
 
   useCanvasGauge(
     canvasRef,
@@ -96,6 +128,7 @@ export function PowerMeter() {
     <MetricCard
       title="Power"
       noPadding
+      status={cardStatus}
       className="flex flex-col items-center justify-center py-6"
     >
       <canvas
@@ -107,6 +140,18 @@ export function PowerMeter() {
           border: "none",
         }}
       />
+      <div className="w-full px-4 pb-4">
+        <SparklineChart
+          data={filteredData}
+          metricKey="power_kW"
+          thresholds={sparklineThresholds}
+          unit="kW"
+          timeWindow={timeWindow}
+          onTimeWindowChange={setTimeWindow}
+          height={110}
+          isDarkMode={isDarkMode}
+        />
+      </div>
     </MetricCard>
   );
 }

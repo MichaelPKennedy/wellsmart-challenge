@@ -1,13 +1,23 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useMemo, useState } from "react";
 import { useCanvasGauge } from "@/hooks/useCanvasGauge";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { MetricCard } from "@/components/ui/MetricCard";
+import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
+import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
+import { DEFAULT_THRESHOLDS } from "@/types/process";
 
 const SIZE = 240;
 const RADIUS = 85;
+
+function getDataByTimeWindow(historicalData: any[], timeWindow: TimeWindow): any[] {
+  const timeAgo = Date.now() - timeWindow * 60 * 1000;
+  return historicalData.filter((point) => {
+    const timestamp = new Date(point.timestamp).getTime();
+    return timestamp >= timeAgo;
+  });
+}
 
 function drawFlowGauge(
   ctx: CanvasRenderingContext2D,
@@ -81,10 +91,32 @@ function drawFlowGauge(
 
 export function FlowGauge() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [timeWindow, setTimeWindow] = useState<TimeWindow>(5);
   const currentFlow = useProcessStore(
     (state) => state.currentData?.flow_gpm ?? 0
   );
+  const historicalData = useProcessStore((state) => state.historicalData);
   const isDarkMode = useThemeStore((state) => state.isDarkMode);
+
+  const filteredData = useMemo(
+    () => getDataByTimeWindow(historicalData, timeWindow),
+    [historicalData, timeWindow]
+  );
+
+  // Custom thresholds for sparkline (operating range: 600-1200)
+  const sparklineThresholds = useMemo(() => ({
+    ...DEFAULT_THRESHOLDS.flow_gpm,
+    min: 600,
+    max: 1200,
+  }), []);
+
+  // Determine status based on current value
+  const cardStatus: MetricCardStatus = useMemo(() => {
+    if (currentFlow > sparklineThresholds.max || currentFlow < sparklineThresholds.min) {
+      return 'error';
+    }
+    return 'ok';
+  }, [currentFlow, sparklineThresholds.max, sparklineThresholds.min]);
 
   useCanvasGauge(
     canvasRef,
@@ -103,6 +135,7 @@ export function FlowGauge() {
     <MetricCard
       title="Flow Rate"
       noPadding
+      status={cardStatus}
       className="flex flex-col items-center justify-center py-4"
     >
       <canvas
@@ -114,6 +147,18 @@ export function FlowGauge() {
           border: "none",
         }}
       />
+      <div className="w-full px-4 pb-4">
+        <SparklineChart
+          data={filteredData}
+          metricKey="flow_gpm"
+          thresholds={sparklineThresholds}
+          unit="GPM"
+          timeWindow={timeWindow}
+          onTimeWindowChange={setTimeWindow}
+          height={110}
+          isDarkMode={isDarkMode}
+        />
+      </div>
     </MetricCard>
   );
 }

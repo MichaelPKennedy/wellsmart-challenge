@@ -14,17 +14,17 @@ export interface ProcessDataPoint extends ProcessData {
 }
 
 export interface MetricThresholds {
-  flow_gpm: { min: number; max: number; warn: number };
-  power_kW: { min: number; max: number; warn: number };
-  pressure_psi: { min: number; max: number; warn: number };
-  pressure_bar: { min: number; max: number; warn: number };
+  flow_gpm: { min: number; max: number; warn: number; low_warn?: number };
+  power_kW: { min: number; max: number; warn: number; low_warn?: number };
+  pressure_psi: { min: number; max: number; warn: number; low_warn?: number };
+  pressure_bar: { min: number; max: number; warn: number; low_warn?: number };
 }
 
 export const DEFAULT_THRESHOLDS: MetricThresholds = {
-  flow_gpm: { min: 0, max: 1200, warn: 1000 },
-  power_kW: { min: 0, max: 600, warn: 500 },
-  pressure_psi: { min: 0, max: 150, warn: 120 },
-  pressure_bar: { min: 0, max: 10.3, warn: 8.3 },
+  flow_gpm: { min: 0, max: 1200, warn: 1000, low_warn: 200 },
+  power_kW: { min: 0, max: 600, warn: 500, low_warn: 100 },
+  pressure_psi: { min: 0, max: 150, warn: 120, low_warn: 30 },
+  pressure_bar: { min: 0, max: 10.3, warn: 8.3, low_warn: 2.0 },
 };
 
 export type MetricKey = 'flow_gpm' | 'power_kW' | 'pressure_psi' | 'pressure_bar';

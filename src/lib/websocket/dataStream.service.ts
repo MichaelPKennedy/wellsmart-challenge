@@ -2,21 +2,24 @@ import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import {
   bufferTime,
   filter,
-  throttleTime,
+  throttle,
   retry,
   tap,
   scan,
   shareReplay,
   catchError,
   map,
+  take,
 } from "rxjs/operators";
-import { Observable, timer } from "rxjs";
+import { Observable, timer, BehaviorSubject } from "rxjs";
 import { ProcessDataPoint } from "@/types/process";
 import { db } from "@/lib/storage/db";
+import { useSamplingRateStore, type SamplingRate } from "@/stores/useSamplingRateStore";
 
 export class DataStreamService {
   private ws$: WebSocketSubject<Record<string, unknown>>;
   public dataStream$: Observable<ProcessDataPoint>;
+  private samplingRate$ = new BehaviorSubject<SamplingRate>(100); // Default 100ms
 
   constructor(wsUrl: string) {
     this.ws$ = webSocket({
@@ -54,8 +57,11 @@ export class DataStreamService {
       bufferTime(100),
       filter((buffer) => buffer.length > 0),
 
-      // Throttle to 60fps (16.67ms)
-      throttleTime(16.67, undefined, { leading: true, trailing: true }),
+      // Dynamically throttle based on sampling rate
+      throttle(() => timer(this.samplingRate$.value), {
+        leading: true,
+        trailing: true,
+      }),
 
       // Flatten buffer and extract latest reading
       map((buffer) => {
@@ -114,6 +120,13 @@ export class DataStreamService {
       // This is necessary for development where React Strict Mode causes double-mounting
       shareReplay({ bufferSize: 1, refCount: false })
     ) as Observable<ProcessDataPoint>;
+  }
+
+  /**
+   * Update the sampling rate dynamically
+   */
+  public setSamplingRate(rate: SamplingRate): void {
+    this.samplingRate$.next(rate);
   }
 
   /**

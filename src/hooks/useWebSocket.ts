@@ -4,14 +4,17 @@ import { initializeDataStream } from '@/lib/websocket/dataStream.service';
 import { useProcessStore } from '@/stores/useProcessStore';
 import { useConnectionStore } from '@/stores/useConnectionStore';
 import { useAlarmStore } from '@/stores/useAlarmStore';
+import { useSamplingRateStore } from '@/stores/useSamplingRateStore';
 
 export function useWebSocket(wsUrl?: string) {
   const subscriptionRef = useRef<Subscription | null>(null);
+  const dataStreamRef = useRef<ReturnType<typeof initializeDataStream> | null>(null);
   const addDataPoint = useProcessStore((state) => state.addDataPoint);
   const setStatus = useConnectionStore((state) => state.setStatus);
   const setOnline = useConnectionStore((state) => state.setOnline);
   const recordMessage = useConnectionStore((state) => state.recordMessage);
   const updateAlarmStatus = useAlarmStore((state) => state.updateAlarmStatus);
+  const samplingRate = useSamplingRateStore((state) => state.samplingRate);
 
   useEffect(() => {
     // Get WebSocket URL from prop or environment variable (client-side only)
@@ -30,6 +33,7 @@ export function useWebSocket(wsUrl?: string) {
     try {
       // Initialize data stream
       const dataStream = initializeDataStream(wsUrlToUse);
+      dataStreamRef.current = dataStream;
 
       // Subscribe to data stream
       subscriptionRef.current = dataStream.subscribe({
@@ -94,4 +98,12 @@ export function useWebSocket(wsUrl?: string) {
       }
     };
   }, [addDataPoint, setStatus, setOnline, recordMessage, updateAlarmStatus]);
+
+  // Update sampling rate when it changes
+  useEffect(() => {
+    if (dataStreamRef.current) {
+      console.log('[WebSocket] Updating sampling rate to:', samplingRate, 'ms');
+      dataStreamRef.current.setSamplingRate(samplingRate);
+    }
+  }, [samplingRate]);
 }

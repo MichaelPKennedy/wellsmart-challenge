@@ -12,6 +12,7 @@ interface AlarmState {
   // Actions
   addAlarm: (alarm: Omit<Alarm, 'id'>) => void;
   acknowledgeAlarm: (alarmId: string) => void;
+  acknowledgeAllAlarms: () => void;
   updateAlarmStatus: (sensorAlarm: boolean, value?: number) => void;
   loadAlarmsFromDB: (alarms: Alarm[]) => void;
 
@@ -48,6 +49,21 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
               ...alarm,
               acknowledged: true,
               acknowledgedAt: new Date().toISOString(),
+            }
+          : alarm
+      ),
+    }));
+  },
+
+  acknowledgeAllAlarms: () => {
+    const now = new Date().toISOString();
+    set((state) => ({
+      allAlarms: state.allAlarms.map((alarm) =>
+        !alarm.acknowledged
+          ? {
+              ...alarm,
+              acknowledged: true,
+              acknowledgedAt: now,
             }
           : alarm
       ),

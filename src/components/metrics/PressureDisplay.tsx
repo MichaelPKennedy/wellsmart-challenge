@@ -1,14 +1,24 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useMemo, useState } from "react";
 import { useCanvasGauge } from "@/hooks/useCanvasGauge";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { MetricCard } from "@/components/ui/MetricCard";
+import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
+import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
+import { DEFAULT_THRESHOLDS } from "@/types/process";
 
 const WIDTH = 240;
 const HEIGHT = 140;
 const RADIUS = 85;
+
+function getDataByTimeWindow(historicalData: any[], timeWindow: TimeWindow): any[] {
+  const timeAgo = Date.now() - timeWindow * 60 * 1000;
+  return historicalData.filter((point) => {
+    const timestamp = new Date(point.timestamp).getTime();
+    return timestamp >= timeAgo;
+  });
+}
 
 function drawPressureGauge(
   ctx: CanvasRenderingContext2D,
@@ -87,10 +97,26 @@ function drawPressureGauge(
 
 export function PressureDisplay() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [timeWindow, setTimeWindow] = useState<TimeWindow>(5);
   const pressurePsi = useProcessStore(
     (state) => state.currentData?.pressure_psi ?? 0
   );
+  const historicalData = useProcessStore((state) => state.historicalData);
   const isDarkMode = useThemeStore((state) => state.isDarkMode);
+
+  const filteredData = useMemo(
+    () => getDataByTimeWindow(historicalData, timeWindow),
+    [historicalData, timeWindow]
+  );
+
+  // Determine status based on current value
+  const cardStatus: MetricCardStatus = useMemo(() => {
+    const thresholds = DEFAULT_THRESHOLDS.pressure_psi;
+    if (pressurePsi > thresholds.max || pressurePsi < thresholds.min) {
+      return 'error';
+    }
+    return 'ok';
+  }, [pressurePsi]);
 
   useCanvasGauge(
     canvasRef,
@@ -111,6 +137,7 @@ export function PressureDisplay() {
     <MetricCard
       title="Pressure"
       noPadding
+      status={cardStatus}
       className="flex flex-col items-center justify-center py-4"
     >
       <canvas
@@ -122,6 +149,18 @@ export function PressureDisplay() {
           border: "none",
         }}
       />
+      <div className="w-full px-4 pb-4">
+        <SparklineChart
+          data={filteredData}
+          metricKey="pressure_psi"
+          thresholds={DEFAULT_THRESHOLDS.pressure_psi}
+          unit="PSI"
+          timeWindow={timeWindow}
+          onTimeWindowChange={setTimeWindow}
+          height={110}
+          isDarkMode={isDarkMode}
+        />
+      </div>
     </MetricCard>
   );
 }

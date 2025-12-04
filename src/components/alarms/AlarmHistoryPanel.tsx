@@ -8,10 +8,15 @@ import { formatDistanceToNow } from 'date-fns';
 export function AlarmHistoryPanel() {
   const recentAlarms = useAlarmStore((state) => state.getRecentAlarms(20));
   const acknowledgeAlarm = useAlarmStore((state) => state.acknowledgeAlarm);
+  const acknowledgeAllAlarms = useAlarmStore((state) => state.acknowledgeAllAlarms);
   const unacknowledgedCount = useAlarmStore((state) => state.getUnacknowledgedCount());
 
   const handleAcknowledge = (alarmId: string) => {
     acknowledgeAlarm(alarmId);
+  };
+
+  const handleAcknowledgeAll = () => {
+    acknowledgeAllAlarms();
   };
 
   return (
@@ -27,6 +32,18 @@ export function AlarmHistoryPanel() {
           </p>
         )}
       </div>
+
+      {/* Acknowledge All Button */}
+      {unacknowledgedCount > 0 && (
+        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/10">
+          <button
+            onClick={handleAcknowledgeAll}
+            className="w-full text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 py-2 px-3 rounded hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors"
+          >
+            Acknowledge All ({unacknowledgedCount})
+          </button>
+        </div>
+      )}
 
       {/* Alarm List */}
       <div className="overflow-y-auto max-h-[500px]">

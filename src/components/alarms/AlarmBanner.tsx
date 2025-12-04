@@ -37,13 +37,13 @@ export function AlarmBanner() {
   };
 
   return (
-    <div className="mb-6 animate-pulse rounded-lg border-2 border-hmi-status-error bg-red-50 dark:bg-red-900/20 dark:border-red-800 px-6 py-4 shadow-lg">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-4 flex-1">
-          <AlertTriangle className="h-6 w-6 text-hmi-status-error flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-hmi-status-error">
+    <div className="mb-6 animate-pulse rounded-lg border-2 border-hmi-status-error bg-red-50 dark:bg-red-900/20 dark:border-red-800 px-4 sm:px-6 py-4 shadow-lg">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+        <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+          <AlertTriangle className="h-5 sm:h-6 w-5 sm:w-6 text-hmi-status-error flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <h3 className="font-bold text-hmi-status-error text-sm sm:text-base">
                 SENSOR ALARM ACTIVE
               </h3>
               <span className="text-xs text-gray-600 dark:text-gray-400">
@@ -52,26 +52,27 @@ export function AlarmBanner() {
                 })}
               </span>
             </div>
-            <p className="text-sm text-hmi-text-secondary dark:text-gray-300 mt-1">
+            <p className="text-xs sm:text-sm text-hmi-text-secondary dark:text-gray-300 mt-1">
               Critical sensor condition detected
               {currentAlarm.value && ` - ${currentAlarm.value} PSI`}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
           <button
             onClick={handleAcknowledge}
-            className="rounded bg-hmi-status-error px-4 py-2 font-semibold text-white hover:bg-red-600 transition-colors"
+            className="flex-1 sm:flex-none rounded bg-hmi-status-error px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-red-600 transition-colors whitespace-nowrap"
           >
-            ACKNOWLEDGE
+            <span className="sm:hidden">ACK</span>
+            <span className="hidden sm:inline">ACKNOWLEDGE</span>
           </button>
           <button
             onClick={handleDismiss}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors flex-shrink-0"
             aria-label="Dismiss banner"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 sm:w-5 h-4 sm:h-5" />
           </button>
         </div>
       </div>
