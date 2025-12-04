@@ -1,5 +1,5 @@
-const CACHE_NAME = 'wellsmart-v1';
-const RUNTIME_CACHE = 'wellsmart-runtime-v1';
+const CACHE_NAME = 'wellsmart-v2';
+const RUNTIME_CACHE = 'wellsmart-runtime-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -19,8 +19,8 @@ self.addEventListener('install', (event) => {
           return Promise.resolve();
         });
       })
-      .then(() => self.skipWaiting()) // Activate immediately
   );
+  // Don't skipWaiting here - wait for user confirmation via message
 });
 
 // Activate: Clean up old caches
