@@ -13,6 +13,7 @@ export function SessionStats() {
   const [averagePressure, setAveragePressure] = useState(0);
   const [dataPoints, setDataPoints] = useState(0);
   const [secondsUntilRefresh, setSecondsUntilRefresh] = useState(30);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const timeframeOptions: { value: Timeframe; label: string }[] = [
     { value: 5, label: "5 min" },
@@ -21,57 +22,56 @@ export function SessionStats() {
     { value: 60, label: "1 hour" },
   ];
 
-  // Function to update stats from IndexedDB
-  const updateStats = async () => {
-    try {
-      // Calculate timestamp for selected timeframe
-      const timeframeMs = selectedTimeframe * 60 * 1000;
-      const cutoffTime = new Date(Date.now() - timeframeMs).toISOString();
-      
-      const recentData = await db.processData
-        .where("timestamp")
-        .above(cutoffTime)
-        .toArray();
-
-      if (recentData.length > 0) {
-        // Calculate averages
-        const avgFlow =
-          recentData.reduce((sum, d) => sum + d.flow_gpm, 0) /
-          recentData.length;
-        const avgPressure =
-          recentData.reduce((sum, d) => sum + d.pressure_psi, 0) /
-          recentData.length;
-        const avgPower =
-          recentData.reduce((sum, d) => sum + d.power_kW, 0) /
-          recentData.length;
-        const maxPower = Math.max(...recentData.map((d) => d.power_kW));
-
-        setAverageFlow(avgFlow);
-        setAveragePressure(avgPressure);
-        setAveragePower(avgPower);
-        setPeakPower(maxPower);
-        setDataPoints(recentData.length);
-      } else {
-        // Reset stats if no data available
-        setAverageFlow(0);
-        setAveragePressure(0);
-        setAveragePower(0);
-        setPeakPower(0);
-        setDataPoints(0);
-      }
-    } catch (err) {
-      console.error("Failed to calculate stats from IndexedDB", err);
-    }
-  };
-
   // Manual refresh handler
   const handleManualRefresh = () => {
-    updateStats();
+    setRefreshTrigger((prev) => prev + 1);
     setSecondsUntilRefresh(30);
   };
 
   // Query IndexedDB for statistics based on selected timeframe
   useEffect(() => {
+    const updateStats = async () => {
+      try {
+        // Calculate timestamp for selected timeframe
+        const timeframeMs = selectedTimeframe * 60 * 1000;
+        const cutoffTime = new Date(Date.now() - timeframeMs).toISOString();
+
+        const recentData = await db.processData
+          .where("timestamp")
+          .above(cutoffTime)
+          .toArray();
+
+        if (recentData.length > 0) {
+          // Calculate averages
+          const avgFlow =
+            recentData.reduce((sum, d) => sum + d.flow_gpm, 0) /
+            recentData.length;
+          const avgPressure =
+            recentData.reduce((sum, d) => sum + d.pressure_psi, 0) /
+            recentData.length;
+          const avgPower =
+            recentData.reduce((sum, d) => sum + d.power_kW, 0) /
+            recentData.length;
+          const maxPower = Math.max(...recentData.map((d) => d.power_kW));
+
+          setAverageFlow(avgFlow);
+          setAveragePressure(avgPressure);
+          setAveragePower(avgPower);
+          setPeakPower(maxPower);
+          setDataPoints(recentData.length);
+        } else {
+          // Reset stats if no data available
+          setAverageFlow(0);
+          setAveragePressure(0);
+          setAveragePower(0);
+          setPeakPower(0);
+          setDataPoints(0);
+        }
+      } catch (err) {
+        console.error("Failed to calculate stats from IndexedDB", err);
+      }
+    };
+
     // Update stats immediately and then every 30 seconds
     updateStats();
     setSecondsUntilRefresh(30);
@@ -80,7 +80,7 @@ export function SessionStats() {
       setSecondsUntilRefresh(30);
     }, 30000);
     return () => clearInterval(interval);
-  }, [selectedTimeframe]);
+  }, [selectedTimeframe, refreshTrigger]);
 
   // Countdown timer for refresh indicator
   useEffect(() => {

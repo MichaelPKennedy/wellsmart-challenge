@@ -10,7 +10,7 @@ import {
   catchError,
   map,
 } from "rxjs/operators";
-import { Observable, timer } from "rxjs";
+import { Observable, timer, Subscription } from "rxjs";
 import { ProcessDataPoint } from "@/types/process";
 import { db } from "@/lib/storage/db";
 
@@ -18,7 +18,7 @@ export class DataStreamService {
   private ws$: WebSocketSubject<Record<string, unknown>>;
   public dataStream$: Observable<ProcessDataPoint>;
   public storageStream$: Observable<ProcessDataPoint>;
-  private storageSubscription: any = null;
+  private storageSubscription: Subscription | null = null;
 
   constructor(wsUrl: string) {
     this.ws$ = webSocket({

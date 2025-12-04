@@ -59,7 +59,7 @@ export function SparklineChart({
       min: now - windowMs,
       max: now,
     };
-  }, [timeWindow, data]); // Re-calculate when data updates to keep "now" current
+  }, [timeWindow, data.length]); // Recalculate when data updates to keep "now" current
 
   const option: EChartsOption = useMemo(
     () => ({
