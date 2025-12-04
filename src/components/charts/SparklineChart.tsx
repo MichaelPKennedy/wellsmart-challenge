@@ -51,15 +51,25 @@ export function SparklineChart({
   // Use consistent cyan color for sparkline
   const lineColor = isDarkMode ? "#22d3ee" : "#06b6d4"; // Cyan
 
-  // Calculate fixed time range for x-axis
+  // Calculate fixed time range for x-axis based on most recent data point
   const timeRange = useMemo(() => {
-    const now = Date.now();
+    if (data.length === 0) {
+      const now = Date.now();
+      const windowMs = timeWindow * 60 * 1000;
+      return {
+        min: now - windowMs,
+        max: now,
+      };
+    }
+
+    // Use the timestamp of the most recent data point as the "max"
+    const latestTimestamp = new Date(data[data.length - 1].timestamp).getTime();
     const windowMs = timeWindow * 60 * 1000; // Convert minutes to milliseconds
     return {
-      min: now - windowMs,
-      max: now,
+      min: latestTimestamp - windowMs,
+      max: latestTimestamp,
     };
-  }, [timeWindow, data.length]); // Recalculate when data updates to keep "now" current
+  }, [timeWindow, data]); // Anchor to actual data timestamps
 
   const option: EChartsOption = useMemo(
     () => ({

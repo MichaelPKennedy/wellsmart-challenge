@@ -19,10 +19,17 @@ function getDataByTimeWindow(
   historicalData: ProcessDataPoint[],
   timeWindow: TimeWindow
 ): ProcessDataPoint[] {
-  const timeAgo = Date.now() - timeWindow * 60 * 1000;
+  if (historicalData.length === 0) return [];
+
+  const latestTimestamp = new Date(
+    historicalData[historicalData.length - 1].timestamp
+  ).getTime();
+  const windowMs = timeWindow * 60 * 1000;
+  const cutoffTime = latestTimestamp - windowMs;
+
   return historicalData.filter((point) => {
     const timestamp = new Date(point.timestamp).getTime();
-    return timestamp >= timeAgo;
+    return timestamp >= cutoffTime;
   });
 }
 

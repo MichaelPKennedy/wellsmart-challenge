@@ -18,15 +18,26 @@ function getDataByTimeWindow(
   historicalData: ProcessDataPoint[],
   timeWindow: TimeWindow
 ): ProcessDataPoint[] {
-  const timeAgo = Date.now() - timeWindow * 60 * 1000;
+  if (historicalData.length === 0) return [];
+
+  const latestTimestamp = new Date(
+    historicalData[historicalData.length - 1].timestamp
+  ).getTime();
+  const windowMs = timeWindow * 60 * 1000;
+  const cutoffTime = latestTimestamp - windowMs;
+
   const filtered = historicalData.filter((point) => {
     const timestamp = new Date(point.timestamp).getTime();
-    return timestamp >= timeAgo;
+    return timestamp >= cutoffTime;
   });
 
   // Debug logging
   if (filtered.length !== historicalData.length) {
-    console.log(`[FlowGauge] ${timeWindow}m window: ${filtered.length}/${historicalData.length} points. Cutoff: ${new Date(timeAgo).toISOString()}`);
+    console.log(
+      `[FlowGauge] ${timeWindow}m window: ${filtered.length}/${
+        historicalData.length
+      } points. Cutoff: ${new Date(cutoffTime).toISOString()}`
+    );
   }
 
   return filtered;
