@@ -70,11 +70,17 @@ function drawPressureGauge(
   ctx.fillStyle = isDarkMode ? "#fff" : "#0f172a";
   ctx.fill();
 
-  // Value Text
+  // Value Text (Draw last to be on top)
   ctx.font = "bold 40px 'JetBrains Mono', monospace";
-  ctx.fillStyle = textColor;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
+  
+  // Add stroke to create separation from needle
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = isDarkMode ? "#1f2937" : "#ffffff"; // Match card background
+  ctx.strokeText(Math.round(psi).toString(), centerX, centerY - 50);
+  
+  ctx.fillStyle = textColor;
   ctx.fillText(Math.round(psi).toString(), centerX, centerY - 50);
 
   // Unit Text
