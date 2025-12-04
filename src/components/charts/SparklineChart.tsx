@@ -32,7 +32,7 @@ export function SparklineChart({
   height = 110,
   isDarkMode = false,
 }: SparklineChartProps) {
-  // Convert data to chart format with horizontal line for gaps
+  // Convert data to chart format
   const chartData = useMemo(() => {
     if (data.length === 0) return [];
 
@@ -45,20 +45,8 @@ export function SparklineChart({
         ]
     );
 
-    // Add synthetic point at start of time window for horizontal line effect
-    const now = Date.now();
-    const windowStart = now - timeWindow * 60 * 1000;
-    const firstDataPoint = rawPoints[0];
-    const shouldAddStartPoint =
-      firstDataPoint && firstDataPoint[0] > windowStart;
-
-    if (shouldAddStartPoint) {
-      // Add point at window start with same value as first real data point
-      rawPoints.unshift([windowStart, firstDataPoint[1]]);
-    }
-
     return rawPoints;
-  }, [data, metricKey, timeWindow]);
+  }, [data, metricKey]);
 
   // Use consistent cyan color for sparkline
   const lineColor = isDarkMode ? "#22d3ee" : "#06b6d4"; // Cyan

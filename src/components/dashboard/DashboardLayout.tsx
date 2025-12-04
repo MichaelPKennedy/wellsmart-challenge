@@ -12,6 +12,7 @@ import { NotificationBell } from "@/components/ui/NotificationBell";
 import { WiFiStatus } from "@/components/ui/WiFiStatus";
 import { OfflineModal } from "@/components/ui/OfflineModal";
 import { SettingsModal } from "@/components/ui/SettingsModal";
+import { SessionStats } from "@/components/dashboard/SessionStats";
 
 export function DashboardLayout() {
   // Initialize WebSocket and IndexedDB
@@ -69,16 +70,7 @@ export function DashboardLayout() {
           <PowerMeter />
           <PressureDisplay />
         </div>
-
-        {/* Placeholder for charts and alarms */}
-        <div className="mt-8">
-          <div className="rounded-lg border border-hmi-bg-border dark:border-hmi-dark-bg-border bg-white dark:bg-hmi-dark-bg-card p-6 transition-colors duration-200">
-            <h2 className="text-lg font-semibold text-hmi-text-primary dark:text-hmi-dark-text-primary"></h2>
-            <p className="text-sm text-hmi-text-secondary dark:text-hmi-dark-text-secondary">
-              Real-time charts, alarm system, and historical data visualization
-            </p>
-          </div>
-        </div>
+        <SessionStats />
       </main>
       <OfflineModal />
     </div>
