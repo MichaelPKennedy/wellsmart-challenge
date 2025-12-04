@@ -12,28 +12,28 @@ const config: Config = {
       colors: {
         hmi: {
           bg: {
-            primary: '#f8fafc', // Slate 50 (Light)
+            primary: '#f0f4f8', // Slightly darker for better contrast
             secondary: '#ffffff', // White
             card: '#ffffff', // White
-            hover: '#f1f5f9', // Slate 100
-            border: '#e2e8f0', // Slate 200
+            hover: '#e8ecf1', // Darker hover state
+            border: '#cbd5e1', // Slate 300 - darker for visibility
           },
           status: {
-            ok: '#06b6d4', // Cyan 500
-            warning: '#f59e0b',
-            error: '#ef4444',
-            offline: '#64748b',
-            info: '#3b82f6',
+            ok: '#0891b2', // Cyan 600 - darker for better contrast
+            warning: '#d97706', // Amber 600 - darker
+            error: '#dc2626', // Red 600 - darker
+            offline: '#475569', // Slate 600 - darker
+            info: '#2563eb', // Blue 600 - darker
           },
           text: {
             primary: '#0f172a', // Slate 900 (Dark text)
-            secondary: '#64748b', // Slate 500
-            muted: '#94a3b8', // Slate 400
+            secondary: '#44546f', // Darker gray for better readability
+            muted: '#64748b', // Slate 500
             inverse: '#f8fafc', // Slate 50
           },
           accent: {
-            primary: '#06b6d4', // Cyan 500
-            secondary: '#0891b2', // Cyan 600
+            primary: '#0891b2', // Cyan 600 - darker
+            secondary: '#0369a1', // Cyan 700 - even darker
           },
           dark: {
             bg: {
