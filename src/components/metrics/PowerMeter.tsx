@@ -4,33 +4,16 @@ import React, { useRef, useMemo, useState } from "react";
 import { useCanvasGauge } from "@/hooks/useCanvasGauge";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
+import { MetricCard } from "@/components/ui/MetricCard";
 import {
   SparklineChart,
   type TimeWindow,
 } from "@/components/charts/SparklineChart";
-import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
+import { DEFAULT_THRESHOLDS } from "@/types/process";
+import { getDataByTimeWindow, getMetricStatus } from "@/lib/utils/chartUtils";
 
 const WIDTH = 313;
 const HEIGHT = 125;
-
-function getDataByTimeWindow(
-  historicalData: ProcessDataPoint[],
-  timeWindow: TimeWindow
-): ProcessDataPoint[] {
-  if (historicalData.length === 0) return [];
-
-  const latestTimestamp = new Date(
-    historicalData[historicalData.length - 1].timestamp
-  ).getTime();
-  const windowMs = timeWindow * 60 * 1000;
-  const cutoffTime = latestTimestamp - windowMs;
-
-  return historicalData.filter((point) => {
-    const timestamp = new Date(point.timestamp).getTime();
-    return timestamp >= cutoffTime;
-  });
-}
 
 function drawPowerMeter(
   ctx: CanvasRenderingContext2D,
@@ -118,15 +101,10 @@ export function PowerMeter() {
   );
 
   // Determine status based on current value
-  const cardStatus: MetricCardStatus = useMemo(() => {
-    if (
-      currentPower > sparklineThresholds.max ||
-      currentPower < sparklineThresholds.min
-    ) {
-      return "error";
-    }
-    return "ok";
-  }, [currentPower, sparklineThresholds.max, sparklineThresholds.min]);
+  const cardStatus = useMemo(
+    () => getMetricStatus(currentPower, sparklineThresholds),
+    [currentPower, sparklineThresholds]
+  );
 
   useCanvasGauge(
     canvasRef,

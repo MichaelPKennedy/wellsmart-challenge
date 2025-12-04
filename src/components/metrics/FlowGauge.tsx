@@ -4,44 +4,16 @@ import React, { useRef, useMemo, useState } from "react";
 import { useCanvasGauge } from "@/hooks/useCanvasGauge";
 import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
+import { MetricCard } from "@/components/ui/MetricCard";
 import {
   SparklineChart,
   type TimeWindow,
 } from "@/components/charts/SparklineChart";
-import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
+import { DEFAULT_THRESHOLDS } from "@/types/process";
+import { getDataByTimeWindow, getMetricStatus } from "@/lib/utils/chartUtils";
 
 const SIZE = 300;
 const RADIUS = 106;
-
-function getDataByTimeWindow(
-  historicalData: ProcessDataPoint[],
-  timeWindow: TimeWindow
-): ProcessDataPoint[] {
-  if (historicalData.length === 0) return [];
-
-  const latestTimestamp = new Date(
-    historicalData[historicalData.length - 1].timestamp
-  ).getTime();
-  const windowMs = timeWindow * 60 * 1000;
-  const cutoffTime = latestTimestamp - windowMs;
-
-  const filtered = historicalData.filter((point) => {
-    const timestamp = new Date(point.timestamp).getTime();
-    return timestamp >= cutoffTime;
-  });
-
-  // Debug logging
-  if (filtered.length !== historicalData.length) {
-    console.log(
-      `[FlowGauge] ${timeWindow}m window: ${filtered.length}/${
-        historicalData.length
-      } points. Cutoff: ${new Date(cutoffTime).toISOString()}`
-    );
-  }
-
-  return filtered;
-}
 
 function drawFlowGauge(
   ctx: CanvasRenderingContext2D,
@@ -138,15 +110,10 @@ export function FlowGauge() {
   );
 
   // Determine status based on current value
-  const cardStatus: MetricCardStatus = useMemo(() => {
-    if (
-      currentFlow > sparklineThresholds.max ||
-      currentFlow < sparklineThresholds.min
-    ) {
-      return "error";
-    }
-    return "ok";
-  }, [currentFlow, sparklineThresholds.max, sparklineThresholds.min]);
+  const cardStatus = useMemo(
+    () => getMetricStatus(currentFlow, sparklineThresholds),
+    [currentFlow, sparklineThresholds]
+  );
 
   useCanvasGauge(
     canvasRef,
