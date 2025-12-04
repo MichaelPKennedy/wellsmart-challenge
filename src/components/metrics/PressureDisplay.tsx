@@ -8,9 +8,9 @@ import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
 import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
 import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
 
-const WIDTH = 240;
-const HEIGHT = 140;
-const RADIUS = 85;
+const WIDTH = 300;
+const HEIGHT = 175;
+const RADIUS = 106;
 
 function getDataByTimeWindow(historicalData: ProcessDataPoint[], timeWindow: TimeWindow): ProcessDataPoint[] {
   const timeAgo = Date.now() - timeWindow * 60 * 1000;
@@ -27,7 +27,7 @@ function drawPressureGauge(
   isDarkMode: boolean = false
 ) {
   const centerX = WIDTH / 2;
-  const centerY = HEIGHT - 40;
+  const centerY = HEIGHT - 50;
   const percentage = Math.min(psi, max) / max;
 
   // Clear background
@@ -41,7 +41,7 @@ function drawPressureGauge(
   // Background Arc (Track)
   ctx.beginPath();
   ctx.arc(centerX, centerY, RADIUS, Math.PI, 2 * Math.PI);
-  ctx.lineWidth = 14; // Increased from 8
+  ctx.lineWidth = 18;
   ctx.strokeStyle = trackColor;
   ctx.lineCap = "butt";
   ctx.stroke();
@@ -49,50 +49,50 @@ function drawPressureGauge(
   // Progress Arc
   ctx.beginPath();
   ctx.arc(centerX, centerY, RADIUS, Math.PI, Math.PI + percentage * Math.PI);
-  ctx.lineWidth = 14; // Increased from 8
+  ctx.lineWidth = 18;
   ctx.strokeStyle = progressColor;
   ctx.lineCap = "butt";
   ctx.stroke();
 
   // Needle (Simple Line)
   const needleAngle = Math.PI + percentage * Math.PI;
-  const needleLength = RADIUS - 20;
+  const needleLength = RADIUS - 25;
   const needleX = centerX + Math.cos(needleAngle) * needleLength;
   const needleY = centerY + Math.sin(needleAngle) * needleLength;
 
   ctx.beginPath();
   ctx.moveTo(centerX, centerY);
   ctx.lineTo(needleX, needleY);
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 5;
   ctx.strokeStyle = isDarkMode ? "#fff" : "#0f172a";
   ctx.lineCap = "round";
   ctx.stroke();
 
   // Center Pivot
   ctx.beginPath();
-  ctx.arc(centerX, centerY, 6, 0, 2 * Math.PI);
+  ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
   ctx.fillStyle = isDarkMode ? "#fff" : "#0f172a";
   ctx.fill();
 
   // Value Text
-  ctx.font = "bold 32px 'JetBrains Mono', monospace";
+  ctx.font = "bold 40px 'JetBrains Mono', monospace";
   ctx.fillStyle = textColor;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(Math.round(psi).toString(), centerX, centerY - 40);
+  ctx.fillText(Math.round(psi).toString(), centerX, centerY - 50);
 
   // Unit Text
-  ctx.font = "12px 'JetBrains Mono', monospace";
+  ctx.font = "15px 'JetBrains Mono', monospace";
   ctx.fillStyle = labelColor;
-  ctx.fillText("PSI", centerX, centerY - 20);
+  ctx.fillText("PSI", centerX, centerY - 25);
 
   // Min/Max Labels
-  ctx.font = "12px 'JetBrains Mono', monospace";
+  ctx.font = "15px 'JetBrains Mono', monospace";
   ctx.fillStyle = labelColor;
   ctx.textAlign = "left";
-  ctx.fillText("0", centerX - RADIUS + 10, centerY + 15);
+  ctx.fillText("0", centerX - RADIUS + 12, centerY + 19);
   ctx.textAlign = "right";
-  ctx.fillText(max.toString(), centerX + RADIUS - 10, centerY + 15);
+  ctx.fillText(max.toString(), centerX + RADIUS - 12, centerY + 19);
 }
 
 export function PressureDisplay() {

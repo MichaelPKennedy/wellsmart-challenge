@@ -8,8 +8,8 @@ import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
 import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
 import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
 
-const SIZE = 240;
-const RADIUS = 85;
+const SIZE = 300;
+const RADIUS = 106;
 
 function getDataByTimeWindow(historicalData: ProcessDataPoint[], timeWindow: TimeWindow): ProcessDataPoint[] {
   const timeAgo = Date.now() - timeWindow * 60 * 1000;
@@ -45,7 +45,7 @@ function drawFlowGauge(
   // Background Arc (Track)
   ctx.beginPath();
   ctx.arc(centerX, centerY, RADIUS, startAngle, endAngle);
-  ctx.lineWidth = 14;
+  ctx.lineWidth = 18;
   ctx.strokeStyle = trackColor;
   ctx.lineCap = "round";
   ctx.stroke();
@@ -53,37 +53,37 @@ function drawFlowGauge(
   // Progress Arc
   ctx.beginPath();
   ctx.arc(centerX, centerY, RADIUS, startAngle, currentAngle);
-  ctx.lineWidth = 14;
+  ctx.lineWidth = 18;
   ctx.strokeStyle = progressColor;
   ctx.lineCap = "round";
   ctx.stroke();
 
   // Value Text
-  ctx.font = "bold 36px 'JetBrains Mono', monospace";
+  ctx.font = "bold 45px 'JetBrains Mono', monospace";
   ctx.fillStyle = textColor;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(Math.round(value).toString(), centerX, centerY);
 
   // Unit Text
-  ctx.font = "12px 'JetBrains Mono', monospace";
+  ctx.font = "15px 'JetBrains Mono', monospace";
   ctx.fillStyle = labelColor;
-  ctx.fillText("GPM", centerX, centerY + 25);
+  ctx.fillText("GPM", centerX, centerY + 31);
 
   // Min/Max Labels
-  ctx.font = "12px 'JetBrains Mono', monospace";
+  ctx.font = "15px 'JetBrains Mono', monospace";
   ctx.fillStyle = labelColor;
 
   // Calculate position for 0 (start)
-  const startX = centerX + Math.cos(startAngle) * (RADIUS + 20);
-  const startY = centerY + Math.sin(startAngle) * (RADIUS + 20);
+  const startX = centerX + Math.cos(startAngle) * (RADIUS + 25);
+  const startY = centerY + Math.sin(startAngle) * (RADIUS + 25);
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
   ctx.fillText("0", startX, startY);
 
   // Calculate position for max (end)
-  const endX = centerX + Math.cos(endAngle) * (RADIUS + 20);
-  const endY = centerY + Math.sin(endAngle) * (RADIUS + 20);
+  const endX = centerX + Math.cos(endAngle) * (RADIUS + 25);
+  const endY = centerY + Math.sin(endAngle) * (RADIUS + 25);
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   ctx.fillText(max.toString(), endX, endY);

@@ -8,8 +8,8 @@ import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
 import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
 import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
 
-const WIDTH = 250;
-const HEIGHT = 100;
+const WIDTH = 313;
+const HEIGHT = 125;
 
 function getDataByTimeWindow(historicalData: ProcessDataPoint[], timeWindow: TimeWindow): ProcessDataPoint[] {
   const timeAgo = Date.now() - timeWindow * 60 * 1000;
@@ -35,10 +35,10 @@ function drawPowerMeter(
   const textColor = isDarkMode ? "#f1f5f9" : "#0f172a";
   const labelColor = isDarkMode ? "#94a3b8" : "#64748b";
 
-  const barHeight = 14;
-  const barY = HEIGHT / 2 + 15;
-  const barWidth = WIDTH - 40;
-  const barX = 20;
+  const barHeight = 18;
+  const barY = HEIGHT / 2 + 19;
+  const barWidth = WIDTH - 50;
+  const barX = 25;
 
   // Background Track
   ctx.fillStyle = trackColor;
@@ -59,25 +59,25 @@ function drawPowerMeter(
   ctx.fill();
 
   // Value Text
-  ctx.font = "bold 32px 'JetBrains Mono', monospace";
+  ctx.font = "bold 40px 'JetBrains Mono', monospace";
   ctx.fillStyle = textColor;
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
-  ctx.fillText(Math.round(value).toString(), WIDTH / 2, barY - 10);
+  ctx.fillText(Math.round(value).toString(), WIDTH / 2, barY - 12);
 
   // Unit Text
-  ctx.font = "12px 'JetBrains Mono', monospace";
+  ctx.font = "15px 'JetBrains Mono', monospace";
   ctx.fillStyle = labelColor;
-  ctx.fillText("kW", WIDTH / 2, barY - 45);
+  ctx.fillText("kW", WIDTH / 2, barY - 56);
 
   // Min/Max Labels
-  ctx.font = "12px 'JetBrains Mono', monospace";
+  ctx.font = "15px 'JetBrains Mono', monospace";
   ctx.fillStyle = labelColor;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText("0", barX, barY + barHeight + 8);
+  ctx.fillText("0", barX, barY + barHeight + 10);
   ctx.textAlign = "right";
-  ctx.fillText(max.toString(), barX + barWidth, barY + barHeight + 8);
+  ctx.fillText(max.toString(), barX + barWidth, barY + barHeight + 10);
 }
 
 export function PowerMeter() {

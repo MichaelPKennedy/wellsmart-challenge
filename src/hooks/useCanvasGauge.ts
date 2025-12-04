@@ -40,8 +40,8 @@ export function useCanvasGauge(
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Handle HiDPI displays
-    const dpr = window.devicePixelRatio || 1;
+    // Handle HiDPI displays with extra scaling for crisp rendering
+    const dpr = Math.max(window.devicePixelRatio || 1, 2); // Use at least 2x DPR
     const width = options.width || options.size;
     const height = options.height || options.size;
 
