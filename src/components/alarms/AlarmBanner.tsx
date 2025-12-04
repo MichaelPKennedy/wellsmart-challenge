@@ -13,12 +13,6 @@ export function AlarmBanner() {
 
   useEffect(() => {
     if (currentAlarm && currentAlarm.id !== lastAlarmId) {
-      console.log("[AlarmBanner] New alarm detected:", {
-        newId: currentAlarm.id,
-        lastId: lastAlarmId,
-        acknowledged: currentAlarm.acknowledged,
-        isActive: currentAlarm.isActive,
-      });
       setDismissed(false);
       setLastAlarmId(currentAlarm.id);
     }
