@@ -184,9 +184,9 @@ export function SessionStats() {
               <span className="text-xs text-hmi-text-secondary dark:text-hmi-dark-text-secondary mb-1">
                 {stat.label}
               </span>
-              <div className="flex items-baseline gap-1">
+              <div className="flex items-baseline gap-0.5 flex-wrap">
                 <span
-                  className={`text-xl sm:text-2xl font-bold font-mono ${stat.color}`}
+                  className={`text-lg sm:text-2xl font-bold font-mono ${stat.color}`}
                 >
                   {stat.value}
                 </span>
