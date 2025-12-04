@@ -9,12 +9,11 @@ import {
   shareReplay,
   catchError,
   map,
-  take,
 } from "rxjs/operators";
 import { Observable, timer, BehaviorSubject } from "rxjs";
 import { ProcessDataPoint } from "@/types/process";
 import { db } from "@/lib/storage/db";
-import { useSamplingRateStore, type SamplingRate } from "@/stores/useSamplingRateStore";
+import type { SamplingRate } from "@/stores/useSamplingRateStore";
 
 export class DataStreamService {
   private ws$: WebSocketSubject<Record<string, unknown>>;

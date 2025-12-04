@@ -10,7 +10,7 @@ import { getRecentReadings, getRecentAlarms, clearOldReadings } from '@/lib/stor
 export function useIndexedDB() {
   const loadHistoricalData = useProcessStore((state) => state.loadHistoricalData);
   const setLoading = useProcessStore((state) => state.setLoading);
-  const loadRecentAlarms = useAlarmStore((state) => state.loadRecentAlarms);
+  const loadAlarmsFromDB = useAlarmStore((state) => state.loadAlarmsFromDB);
 
   useEffect(() => {
     const loadData = async () => {
@@ -26,7 +26,7 @@ export function useIndexedDB() {
 
         // Load recent alarms
         const alarms = await getRecentAlarms(50);
-        loadRecentAlarms(alarms);
+        loadAlarmsFromDB(alarms);
         console.log(`Loaded ${alarms.length} recent alarms from IndexedDB`);
       } catch (err) {
         console.error('Failed to load data from IndexedDB', err);
@@ -35,7 +35,7 @@ export function useIndexedDB() {
     };
 
     loadData();
-  }, [loadHistoricalData, setLoading, loadRecentAlarms]);
+  }, [loadHistoricalData, setLoading, loadAlarmsFromDB]);
 
   // Setup periodic cleanup of old data (every 15 minutes)
   useEffect(() => {

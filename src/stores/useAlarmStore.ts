@@ -10,7 +10,7 @@ interface AlarmState {
   currentAlarmId: string | null; // ID of current active sensor alarm
 
   // Actions
-  addAlarm: (alarm: Omit<Alarm, 'id'>) => void;
+  addAlarm: (alarm: Omit<Alarm, 'id'>) => string;
   acknowledgeAlarm: (alarmId: string) => void;
   acknowledgeAllAlarms: () => void;
   updateAlarmStatus: (sensorAlarm: boolean, value?: number) => void;

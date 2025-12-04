@@ -142,6 +142,7 @@ export function SparklineChart({
         textStyle: {
           color: isDarkMode ? '#f1f5f9' : '#0f172a',
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formatter: (params: any) => {
           const point = params[0];
           const date = new Date(point.value[0]);

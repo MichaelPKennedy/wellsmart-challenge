@@ -11,7 +11,7 @@ const SAMPLING_OPTIONS: { value: SamplingRate; label: string }[] = [
   { value: 16, label: "16ms (Real-time)" },
   { value: 50, label: "50ms" },
   { value: 100, label: "100ms" },
-  { value: 250, label: "200ms" },
+  { value: 200, label: "200ms" },
 ];
 
 export function SamplingRateDropdown() {

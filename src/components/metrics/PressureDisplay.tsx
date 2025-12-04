@@ -6,13 +6,13 @@ import { useProcessStore } from "@/stores/useProcessStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { MetricCard, type MetricCardStatus } from "@/components/ui/MetricCard";
 import { SparklineChart, type TimeWindow } from "@/components/charts/SparklineChart";
-import { DEFAULT_THRESHOLDS } from "@/types/process";
+import { DEFAULT_THRESHOLDS, type ProcessDataPoint } from "@/types/process";
 
 const WIDTH = 240;
 const HEIGHT = 140;
 const RADIUS = 85;
 
-function getDataByTimeWindow(historicalData: any[], timeWindow: TimeWindow): any[] {
+function getDataByTimeWindow(historicalData: ProcessDataPoint[], timeWindow: TimeWindow): ProcessDataPoint[] {
   const timeAgo = Date.now() - timeWindow * 60 * 1000;
   return historicalData.filter((point) => {
     const timestamp = new Date(point.timestamp).getTime();

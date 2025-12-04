@@ -97,7 +97,7 @@ export function useWebSocket(wsUrl?: string) {
         subscriptionRef.current.unsubscribe();
       }
     };
-  }, [addDataPoint, setStatus, setOnline, recordMessage, updateAlarmStatus]);
+  }, [addDataPoint, setStatus, setOnline, recordMessage, updateAlarmStatus, wsUrl]);
 
   // Update sampling rate when it changes
   useEffect(() => {
