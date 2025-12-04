@@ -5,7 +5,7 @@ import ReactECharts from "echarts-for-react";
 import { ProcessDataPoint } from "@/types/process";
 import type { EChartsOption } from "echarts";
 
-export type TimeWindow = 5 | 10 | 20; // minutes
+export type TimeWindow = 0.5 | 1 | 5; // minutes (0.5 = 30 seconds)
 
 interface SparklineChartProps {
   data: ProcessDataPoint[];
@@ -32,7 +32,7 @@ export function SparklineChart({
   height = 110,
   isDarkMode = false,
 }: SparklineChartProps) {
-  // Convert data to chart format (stored at 500ms, so no bucketing needed)
+  // Convert data to chart format with horizontal line for gaps
   const chartData = useMemo(() => {
     if (data.length === 0) return [];
 
@@ -75,9 +75,7 @@ export function SparklineChart({
 
   const option: EChartsOption = useMemo(
     () => ({
-      animation: true,
-      animationDuration: 1000,
-      animationEasing: "linear",
+      animation: false,
       backgroundColor: "transparent",
       grid: {
         left: 20,
@@ -171,9 +169,9 @@ export function SparklineChart({
   );
 
   const TIME_WINDOW_OPTIONS: { value: TimeWindow; label: string }[] = [
+    { value: 0.5, label: "30s" },
+    { value: 1, label: "1m" },
     { value: 5, label: "5m" },
-    { value: 10, label: "10m" },
-    { value: 20, label: "20m" },
   ];
 
   return (

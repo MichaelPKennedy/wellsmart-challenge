@@ -103,7 +103,7 @@ function drawPressureGauge(
 
 export function PressureDisplay() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [timeWindow, setTimeWindow] = useState<TimeWindow>(5);
+  const [timeWindow, setTimeWindow] = useState<TimeWindow>(0.5);
   const pressurePsi = useProcessStore(
     (state) => state.currentData?.pressure_psi ?? 0
   );

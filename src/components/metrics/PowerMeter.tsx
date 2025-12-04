@@ -88,7 +88,7 @@ function drawPowerMeter(
 
 export function PowerMeter() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [timeWindow, setTimeWindow] = useState<TimeWindow>(5);
+  const [timeWindow, setTimeWindow] = useState<TimeWindow>(0.5);
   const currentPower = useProcessStore(
     (state) => state.currentData?.power_kW ?? 0
   );

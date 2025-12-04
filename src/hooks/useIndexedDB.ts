@@ -15,8 +15,8 @@ export function useIndexedDB() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load recent readings (2400 points = ~20 minutes at 500ms = 2Hz)
-        const readings = await getRecentReadings(2400);
+        // Load recent readings (3600 points = ~12 minutes at 200ms = 5Hz)
+        const readings = await getRecentReadings(3600);
         console.log(`[IndexedDB] Found ${readings.length} readings in database`);
         if (readings.length > 0) {
           // Log timestamp range

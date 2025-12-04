@@ -113,9 +113,9 @@ export class DataStreamService {
       shareReplay({ bufferSize: 1, refCount: false })
     ) as Observable<ProcessDataPoint>;
 
-    // Storage Stream: 1000ms throttling for IndexedDB and charts
+    // Storage Stream: 200ms throttling for IndexedDB and charts
     this.storageStream$ = baseStream$.pipe(
-      throttle(() => timer(1000), {
+      throttle(() => timer(200), {
         leading: true,
         trailing: true,
       }),
@@ -149,7 +149,7 @@ export class DataStreamService {
       tap(async (reading) => {
         try {
           await db.processData.add(reading);
-          console.log("[Storage] Saved reading to IndexedDB at 1000ms interval");
+          console.log("[Storage] Saved reading to IndexedDB at 200ms interval");
         } catch (err) {
           // Silently ignore duplicate key errors (if timestamp already exists)
           if (err instanceof Error && err.name?.includes("ConstraintError")) {
