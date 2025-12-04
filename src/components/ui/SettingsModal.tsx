@@ -1,22 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Settings, X, Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { useSamplingRateStore } from '@/stores/useSamplingRateStore';
+import { useState } from "react";
+import { Settings, X, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import {
+  useSamplingRateStore,
+  type SamplingRate,
+} from "@/stores/useSamplingRateStore";
 
 export function SettingsModal() {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const isDarkMode = theme === 'dark';
+  const isDarkMode = theme === "dark";
   const samplingRate = useSamplingRateStore((state) => state.samplingRate);
-  const setSamplingRate = useSamplingRateStore((state) => state.setSamplingRate);
+  const setSamplingRate = useSamplingRateStore(
+    (state) => state.setSamplingRate
+  );
 
-  const samplingRateOptions = [
-    { value: 16, label: '16ms (Real-time)' },
-    { value: 100, label: '100ms' },
-    { value: 500, label: '500ms' },
-    { value: 1000, label: '1s' },
+  const samplingRateOptions: Array<{ value: SamplingRate; label: string }> = [
+    { value: 16, label: "16ms (Real-time)" },
+    { value: 50, label: "50ms" },
+    { value: 100, label: "100ms" },
+    { value: 200, label: "200ms" },
   ];
 
   return (
@@ -65,22 +70,22 @@ export function SettingsModal() {
                   </label>
                   <div className="flex gap-3">
                     <button
-                      onClick={() => setTheme('light')}
+                      onClick={() => setTheme("light")}
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors ${
                         !isDarkMode
-                          ? 'bg-gray-900 dark:bg-gray-900 text-white'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          ? "bg-gray-900 dark:bg-gray-900 text-white"
+                          : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                       }`}
                     >
                       <Sun className="w-4 h-4" />
                       Light
                     </button>
                     <button
-                      onClick={() => setTheme('dark')}
+                      onClick={() => setTheme("dark")}
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-colors ${
                         isDarkMode
-                          ? 'bg-gray-900 dark:bg-gray-900 text-white'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          ? "bg-gray-900 dark:bg-gray-900 text-white"
+                          : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                       }`}
                     >
                       <Moon className="w-4 h-4" />
@@ -98,11 +103,11 @@ export function SettingsModal() {
                     {samplingRateOptions.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => setSamplingRate(option.value as any)}
+                        onClick={() => setSamplingRate(option.value)}
                         className={`w-full px-4 py-3 rounded-lg font-medium transition-colors text-left ${
                           samplingRate === option.value
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                         }`}
                       >
                         {option.label}
