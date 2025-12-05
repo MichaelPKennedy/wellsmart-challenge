@@ -20,7 +20,9 @@ export function useServiceWorker() {
         });
 
         // Check if there's already an update waiting
-        if (registration.waiting) {
+        // Only show update notification if we already have a controlling service worker
+        // This prevents showing the notification on first visit
+        if (registration.waiting && navigator.serviceWorker.controller) {
           setUpdate(registration);
         }
 
@@ -41,7 +43,15 @@ export function useServiceWorker() {
           const newWorker = registration.installing;
           if (newWorker) {
             newWorker.addEventListener("statechange", () => {
-              if (newWorker.state === "installed" && registration.waiting) {
+              // Only show update notification if:
+              // 1. The new worker is installed
+              // 2. There's a waiting worker
+              // 3. We already have a controlling service worker (not first visit)
+              if (
+                newWorker.state === "installed" &&
+                registration.waiting &&
+                navigator.serviceWorker.controller
+              ) {
                 // Trigger update notification
                 setUpdate(registration);
               }
