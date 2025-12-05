@@ -17,24 +17,15 @@ export function useIndexedDB() {
       try {
         // Load recent readings (3600 points = ~12 minutes at 200ms = 5Hz)
         const readings = await getRecentReadings(3600);
-        console.log(`[IndexedDB] Found ${readings.length} readings in database`);
         if (readings.length > 0) {
-          // Log timestamp range
-          const timestamps = readings.map(r => new Date(r.timestamp).getTime());
-          const oldest = Math.min(...timestamps);
-          const newest = Math.max(...timestamps);
-          console.log(`[IndexedDB] Date range: ${new Date(oldest).toISOString()} to ${new Date(newest).toISOString()}`);
-
           loadHistoricalData(readings);
         } else {
-          console.log(`[IndexedDB] No historical data found, starting fresh`);
           setLoading(false);
         }
 
         // Load recent alarms
         const alarms = await getRecentAlarms(50);
         loadAlarmsFromDB(alarms);
-        console.log(`Loaded ${alarms.length} recent alarms from IndexedDB`);
       } catch (err) {
         console.error('Failed to load data from IndexedDB', err);
         setLoading(false);
@@ -48,10 +39,7 @@ export function useIndexedDB() {
   useEffect(() => {
     const cleanupInterval = setInterval(async () => {
       try {
-        const deleted = await clearOldReadings(48);
-        if (deleted > 0) {
-          console.log(`Cleanup: Removed ${deleted} old readings`);
-        }
+        await clearOldReadings(48);
       } catch (err) {
         console.error('Failed to cleanup old readings', err);
       }

@@ -64,7 +64,6 @@ export async function clearOldReadings(hoursToKeep: number = 48): Promise<number
   try {
     const cutoffTime = new Date(Date.now() - hoursToKeep * 60 * 60 * 1000).toISOString();
     const deleted = await db.processData.where('timestamp').below(cutoffTime).delete();
-    console.log(`Cleared ${deleted} old readings (older than ${hoursToKeep} hours)`);
     return deleted;
   } catch (err) {
     console.error('Failed to clear old readings', err);

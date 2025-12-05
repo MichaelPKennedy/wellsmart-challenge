@@ -70,7 +70,6 @@ export const useProcessStore = create<ProcessState>((set, get) => ({
 
   loadHistoricalData: (data) =>
     set(() => {
-      console.log(`[ProcessStore] Loaded ${data.length} historical data points`);
       const flowValues = data.map((d) => d.flow_gpm);
       const powerValues = data.map((d) => d.power_kW);
 

@@ -37,11 +37,6 @@ export class DataStreamService {
           console.warn("WebSocket closed");
         },
       },
-      openObserver: {
-        next: () => {
-          console.log("WebSocket connected");
-        },
-      },
     });
 
     // Base stream: common processing before throttling
@@ -63,7 +58,6 @@ export class DataStreamService {
           const baseDelay = 1000; // 1 second
           const maxDelay = 30000; // 30 seconds
           const delay = Math.min(baseDelay * Math.pow(2, retryCount), maxDelay);
-          console.log(`Reconnecting in ${delay}ms (attempt ${retryCount + 1})`);
           return timer(delay);
         },
       }),
@@ -149,7 +143,6 @@ export class DataStreamService {
       tap(async (reading) => {
         try {
           await db.processData.add(reading);
-          console.log("[Storage] Saved reading to IndexedDB at 200ms interval");
         } catch (err) {
           // Silently ignore duplicate key errors (if timestamp already exists)
           if (err instanceof Error && err.name?.includes("ConstraintError")) {

@@ -24,14 +24,10 @@ export function useWebSocket(wsUrl?: string) {
 
     // Only connect if WebSocket URL is configured
     if (!wsUrlToUse) {
-      console.log(
-        "[WebSocket] No URL configured. Set NEXT_PUBLIC_WS_URL to connect to a WebSocket server."
-      );
       setStatus("disconnected");
       return;
     }
 
-    console.log("[WebSocket] Initializing with URL:", wsUrlToUse);
     setHasAttemptedConnection(true);
     setStatus("connecting");
 
@@ -68,7 +64,6 @@ export function useWebSocket(wsUrl?: string) {
           setStatus("error");
         },
         complete: () => {
-          console.log("[WebSocket] UI stream completed");
           setStatus("disconnected");
         },
       });
@@ -98,12 +93,10 @@ export function useWebSocket(wsUrl?: string) {
 
     // Listen to network status
     const handleOnline = () => {
-      console.log("Network connection restored");
       setOnline(true);
     };
 
     const handleOffline = () => {
-      console.log("Network connection lost");
       setOnline(false);
     };
 
