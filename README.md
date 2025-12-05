@@ -12,7 +12,7 @@ HMI (Human-Machine Interface) dashboard for the WellSmart Technologies frontend 
 ✅ **Offline-First** - IndexedDB persistence + Service Worker caching  
 ✅ **Canvas Gauges** - High-performance visualizations (Flow, Power, Pressure)
 ✅ **Alarm System** - Real-time sensor alarm notifications
-✅ **Professional UI** - Light theme HMI design (ISO 9241-110)
+✅ **Professional UI** - Dark/Light theme HMI design (ISO 9241-110)
 ✅ **TypeScript** - Full type safety
 ✅ **Responsive** - Mobile-friendly design
 
@@ -42,14 +42,14 @@ WebSocket (10ms) → [RxJS: buffer, validate] → Dual Stream Architecture:
       → [ECharts: Time-series visualization - 5fps updates]
 ```
 
-### Why Dual-Stream?
+### Architecture Choices Explained
 
 **RxJS Dual-Stream Architecture**: Different UI elements need different update rates
 
 - **Base stream**: `bufferTime(50)` + validation + `shareReplay()` for common processing
 - **UI stream**: `throttle(100ms)` for smooth gauge animations (10fps)
 - **Storage stream**: `throttle(200ms)` for IndexedDB writes and charts (5fps)
-- **Why split?**: Gauges need frequent updates for smooth animation, but persisting/charting every 10ms wastes resources
+- **Why split?**: Gauges need frequent updates (100ms) to maintain a truly real-time, responsive feel with smooth animations, while storage/charts can use a slower 200ms rate without sacrificing functionality - persisting every 10ms from the WebSocket would waste resources
 - **Benefits**: Single WebSocket connection, optimized update rates per use case, reduced IndexedDB write pressure
 - Built-in reconnection with exponential backoff
 
@@ -156,10 +156,21 @@ Primary: Cyan (#22d3ee dark / #06b6d4 light)
 ## Running Locally
 
 ```bash
+# 1. Install dependencies
 npm install
+
+# 2. Create .env.local file and add your WebSocket URL
+cp .env.local.example .env.local
+# Edit .env.local and replace YOUR_WEBSOCKET_URL with your actual WebSocket URL
+# NEXT_PUBLIC_WS_URL="wss://your-websocket-server.com/ws"
+
+# 3. Start development server
 npm run dev
-# Open http://localhost:3000
+
+# 4. Open http://localhost:3000
 ```
+
+**Note**: The application requires a WebSocket URL to connect to the data stream. If `NEXT_PUBLIC_WS_URL` is not configured, the app will display a disconnected state but remain functional for testing the UI.
 
 ## Theme Support
 
