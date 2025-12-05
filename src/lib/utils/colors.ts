@@ -46,6 +46,7 @@ export function getColor(
   isDarkMode: boolean
 ): string {
   const parts = colorPath.split('.');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let current: any = COLORS;
 
   for (const part of parts) {
