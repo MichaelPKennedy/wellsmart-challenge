@@ -301,3 +301,7 @@ _Service worker notifies users when new version is available._
 - Automatic checking - no manual intervention needed to discover updates
 
 This ensures users always have access to the latest features while maintaining a smooth, uninterrupted experience.
+
+## Future Enhancements
+
+Move web socket handling to a web worker. When navigating away from tab, browser throttles js execution to save cpu. This causes a gap in the historical chart data if you move away from the tab for a while. (Web worker would be unaffected by tab throttling)

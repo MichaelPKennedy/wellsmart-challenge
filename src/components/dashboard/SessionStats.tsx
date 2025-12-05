@@ -125,7 +125,7 @@ export function SessionStats() {
 
   return (
     <div className="mt-8">
-      <div className="rounded-lg border border-hmi-bg-border dark:border-hmi-dark-bg-border bg-white dark:bg-hmi-dark-bg-card p-4 sm:p-6 transition-colors duration-200">
+      <div className="hmi-card p-4 sm:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <h2 className="text-lg font-semibold text-hmi-text-primary dark:text-hmi-dark-text-primary whitespace-nowrap">
@@ -136,10 +136,10 @@ export function SessionStats() {
                 <button
                   key={option.value}
                   onClick={() => setSelectedTimeframe(option.value)}
-                  className={`px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+                  className={`btn-small ${
                     selectedTimeframe === option.value
-                      ? "bg-cyan-600 dark:bg-cyan-500 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-hmi-text-secondary dark:text-hmi-dark-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "btn-small-active"
+                      : "btn-small-inactive"
                   }`}
                 >
                   {option.label}
@@ -179,7 +179,7 @@ export function SessionStats() {
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="flex flex-col p-2.5 sm:p-3 rounded-md bg-gray-50 dark:bg-gray-800/50"
+              className="stat-card"
             >
               <span className="text-xs text-hmi-text-secondary dark:text-hmi-dark-text-secondary mb-1">
                 {stat.label}

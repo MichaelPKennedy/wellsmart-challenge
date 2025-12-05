@@ -2,6 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  /* Cards & Containers */
+  .hmi-card {
+    @apply rounded-lg border transition-colors duration-200;
+    @apply border-hmi-bg-border bg-white;
+    @apply dark:bg-hmi-dark-bg-card dark:border-hmi-dark-bg-border;
+  }
+
+  .hmi-card-sm {
+    @apply rounded-md border transition-colors;
+    @apply border-gray-200 bg-white;
+    @apply dark:bg-gray-900 dark:border-gray-800;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply px-3 py-1.5 text-sm font-medium text-white;
+    @apply bg-blue-600 hover:bg-blue-700;
+    @apply rounded-md transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-3 py-1.5 text-sm font-medium;
+    @apply text-gray-700 dark:text-gray-300;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+    @apply rounded-md transition-colors;
+  }
+
+  .btn-small {
+    @apply px-2.5 py-1 text-xs sm:text-sm font-medium;
+    @apply rounded-md transition-colors whitespace-nowrap;
+  }
+
+  .btn-small-active {
+    @apply bg-cyan-600 dark:bg-cyan-500 text-white;
+  }
+
+  .btn-small-inactive {
+    @apply bg-gray-100 dark:bg-gray-800;
+    @apply text-hmi-text-secondary dark:text-hmi-dark-text-secondary;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-700;
+  }
+
+  /* Text */
+  .text-label {
+    @apply text-xs text-hmi-text-secondary dark:text-hmi-dark-text-secondary;
+  }
+
+  .text-value {
+    @apply text-xl sm:text-2xl font-bold font-mono;
+  }
+
+  /* Stat Cards */
+  .stat-card {
+    @apply flex flex-col p-2.5 sm:p-3 rounded-md;
+    @apply bg-gray-50 dark:bg-gray-800/50;
+  }
+
+  /* Gauge Components */
+  .gauge-canvas {
+    @apply block border-none;
+  }
+
+  .gauge-sparkline {
+    @apply w-full px-4 pb-4;
+  }
+}
+
 html {
   font-size: 20px;
 }

@@ -139,15 +139,14 @@ export function FlowGauge() {
       <div style={{ height: 280, overflow: 'hidden', display: 'flex', justifyContent: 'center' }}>
         <canvas
           ref={canvasRef}
+          className="gauge-canvas"
           style={{
-            display: "block",
             width: SIZE,
             height: SIZE,
-            border: "none",
           }}
         />
       </div>
-      <div className="w-full px-4 pb-4">
+      <div className="gauge-sparkline">
         <SparklineChart
           data={filteredData}
           metricKey="flow_gpm"

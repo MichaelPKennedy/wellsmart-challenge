@@ -142,14 +142,13 @@ export function PressureDisplay() {
     >
       <canvas
         ref={canvasRef}
+        className="gauge-canvas"
         style={{
-          display: "block",
           width: WIDTH,
           height: HEIGHT,
-          border: "none",
         }}
       />
-      <div className="w-full px-4 pb-4 mt-2">
+      <div className="gauge-sparkline mt-2">
         <SparklineChart
           data={filteredData}
           metricKey="pressure_psi"

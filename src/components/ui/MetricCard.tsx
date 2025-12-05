@@ -23,10 +23,7 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'relative rounded-md border bg-white shadow-sm',
-        'border-gray-200',
-        'dark:bg-hmi-dark-bg-card dark:border-hmi-dark-bg-border',
-        'transition-colors duration-200',
+        'relative hmi-card shadow-sm',
         className
       )}
     >
