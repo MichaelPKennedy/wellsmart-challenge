@@ -1,4 +1,21 @@
 #!/usr/bin/env node
+/**
+ * WebSocket Data Stream Analysis Script
+ *
+ * Purpose:
+ * This script was used during development to analyze the live WebSocket data stream
+ * and inform architectural decisions for the HMI dashboard.
+ *
+ * What it does:
+ * 1. Connects to the WebSocket server and collects data for 10 minutes
+ * 2. Analyzes timing patterns (message intervals, consistency)
+ * 3. Analyzes sensor alarm correlations (what metric values trigger alarms)
+ * 4. Validates message types and data structure
+ *
+ * How we used it:
+ * - Analyzed sensor_alarm behavior (determined it does not correlate with specific metric thresholds)
+ * - Confirmed all messages are "process_data" type with consistent structure
+ */
 import "dotenv/config";
 import WebSocket from "ws";
 
