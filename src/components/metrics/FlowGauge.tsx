@@ -11,6 +11,7 @@ import {
 } from "@/components/charts/SparklineChart";
 import { DEFAULT_THRESHOLDS } from "@/types/process";
 import { getDataByTimeWindow, getMetricStatus } from "@/lib/utils/chartUtils";
+import { COLORS } from "@/lib/utils/colors";
 
 const SIZE = 300;
 const RADIUS = 106;
@@ -28,10 +29,10 @@ function drawFlowGauge(
   // Clear background
   ctx.clearRect(0, 0, SIZE, SIZE);
 
-  const trackColor = isDarkMode ? "#1f2937" : "#e2e8f0";
-  const progressColor = isDarkMode ? "#22d3ee" : "#06b6d4"; // Cyan
-  const textColor = isDarkMode ? "#f1f5f9" : "#0f172a";
-  const labelColor = isDarkMode ? "#94a3b8" : "#64748b";
+  const trackColor = isDarkMode ? COLORS.background.dark : COLORS.background.light;
+  const progressColor = isDarkMode ? COLORS.primary.dark : COLORS.primary.light;
+  const textColor = isDarkMode ? COLORS.text.primary.dark : COLORS.text.primary.light;
+  const labelColor = isDarkMode ? COLORS.text.secondary.dark : COLORS.text.secondary.light;
 
   // Arc configuration (270 degrees)
   const startAngle = Math.PI * 0.75;

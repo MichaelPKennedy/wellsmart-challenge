@@ -11,6 +11,7 @@ import {
 } from "@/components/charts/SparklineChart";
 import { DEFAULT_THRESHOLDS } from "@/types/process";
 import { getDataByTimeWindow, getMetricStatus } from "@/lib/utils/chartUtils";
+import { COLORS } from "@/lib/utils/colors";
 
 const WIDTH = 300;
 const HEIGHT = 175;
@@ -29,10 +30,10 @@ function drawPressureGauge(
   // Clear background
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-  const trackColor = isDarkMode ? "#1f2937" : "#e2e8f0";
-  const progressColor = isDarkMode ? "#22d3ee" : "#06b6d4"; // Cyan
-  const textColor = isDarkMode ? "#f1f5f9" : "#0f172a";
-  const labelColor = isDarkMode ? "#94a3b8" : "#64748b";
+  const trackColor = isDarkMode ? COLORS.background.dark : COLORS.background.light;
+  const progressColor = isDarkMode ? COLORS.primary.dark : COLORS.primary.light;
+  const textColor = isDarkMode ? COLORS.text.primary.dark : COLORS.text.primary.light;
+  const labelColor = isDarkMode ? COLORS.text.secondary.dark : COLORS.text.secondary.light;
 
   // Background Arc (Track)
   ctx.beginPath();
@@ -60,14 +61,14 @@ function drawPressureGauge(
   ctx.moveTo(centerX, centerY);
   ctx.lineTo(needleX, needleY);
   ctx.lineWidth = 5;
-  ctx.strokeStyle = isDarkMode ? "#fff" : "#0f172a";
+  ctx.strokeStyle = isDarkMode ? COLORS.stroke.dark : COLORS.stroke.light;
   ctx.lineCap = "round";
   ctx.stroke();
 
   // Center Pivot
   ctx.beginPath();
   ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
-  ctx.fillStyle = isDarkMode ? "#fff" : "#0f172a";
+  ctx.fillStyle = isDarkMode ? COLORS.stroke.dark : COLORS.stroke.light;
   ctx.fill();
 
   // Value Text (Draw last to be on top)
@@ -77,7 +78,7 @@ function drawPressureGauge(
   
   // Add stroke to create separation from needle
   ctx.lineWidth = 6;
-  ctx.strokeStyle = isDarkMode ? "#1f2937" : "#ffffff"; // Match card background
+  ctx.strokeStyle = isDarkMode ? COLORS.background.dark : COLORS.white; // Match card background
   ctx.strokeText(Math.round(psi).toString(), centerX, centerY - 50);
   
   ctx.fillStyle = textColor;

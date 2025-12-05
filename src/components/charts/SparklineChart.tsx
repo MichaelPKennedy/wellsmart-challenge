@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 import { ProcessDataPoint } from "@/types/process";
 import type { EChartsOption } from "echarts";
+import { COLORS } from "@/lib/utils/colors";
 
 export type TimeWindow = 0.5 | 1 | 5; // minutes (0.5 = 30 seconds)
 
@@ -48,8 +49,8 @@ export function SparklineChart({
     return rawPoints;
   }, [data, metricKey]);
 
-  // Use consistent cyan color for sparkline
-  const lineColor = isDarkMode ? "#22d3ee" : "#06b6d4"; // Cyan
+  // Use consistent primary accent color for sparkline
+  const lineColor = isDarkMode ? COLORS.primary.dark : COLORS.primary.light;
 
   // Calculate fixed time range for x-axis based on most recent data point
   const timeRange = useMemo(() => {
