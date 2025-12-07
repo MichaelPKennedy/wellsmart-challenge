@@ -4,23 +4,43 @@ import {
   filter,
   throttle,
   retry,
+  repeat,
   tap,
   scan,
   shareReplay,
   catchError,
   map,
 } from "rxjs/operators";
-import { Observable, timer, Subscription } from "rxjs";
+import { Observable, timer, Subject } from "rxjs";
 import { ProcessDataPoint } from "@/types/process";
 import { db } from "@/lib/storage/db";
+
+export type ConnectionStatus = "connected" | "disconnected" | "reconnecting";
+
+/**
+ * Calculate exponential backoff delay for reconnection attempts
+ * @param attemptCount - The number of reconnection attempts (0-indexed)
+ * @returns Observable timer for the delay
+ */
+function getReconnectDelay(attemptCount: number) {
+  const baseDelay = 1000;
+  const maxDelay = 30000;
+  const delay = Math.min(baseDelay * Math.pow(2, attemptCount), maxDelay);
+  return timer(delay);
+}
 
 export class DataStreamService {
   private ws$: WebSocketSubject<Record<string, unknown>>;
   public dataStream$: Observable<ProcessDataPoint>;
   public storageStream$: Observable<ProcessDataPoint>;
-  private storageSubscription: Subscription | null = null;
+  public connectionStatus$: Observable<ConnectionStatus>;
+  private connectionStatusSubject: Subject<ConnectionStatus>;
 
   constructor(wsUrl: string) {
+    // Initialize connection status subject
+    this.connectionStatusSubject = new Subject<ConnectionStatus>();
+    this.connectionStatus$ = this.connectionStatusSubject.asObservable();
+
     this.ws$ = webSocket({
       url: wsUrl,
       deserializer: (e: MessageEvent) => {
@@ -32,9 +52,18 @@ export class DataStreamService {
         }
       },
       serializer: (value: unknown) => JSON.stringify(value),
+      openObserver: {
+        next: () => {
+          // Emit connected status
+          this.connectionStatusSubject.next("connected");
+        },
+      },
       closeObserver: {
         next: () => {
           console.warn("WebSocket closed");
+
+          // Emit reconnecting status
+          this.connectionStatusSubject.next("reconnecting");
         },
       },
     });
@@ -51,15 +80,16 @@ export class DataStreamService {
       bufferTime(50),
       filter((buffer) => buffer.length > 0),
 
-      // Handle reconnection with exponential backoff
+      // Handle errors (unexpected disconnects) with exponential backoff
       retry({
         count: Number.POSITIVE_INFINITY,
-        delay: (error, retryCount) => {
-          const baseDelay = 1000; // 1 second
-          const maxDelay = 30000; // 30 seconds
-          const delay = Math.min(baseDelay * Math.pow(2, retryCount), maxDelay);
-          return timer(delay);
-        },
+        delay: (error, retryCount) => getReconnectDelay(retryCount),
+      }),
+
+      // Handle completions (normal disconnects) with exponential backoff
+      repeat({
+        count: Number.POSITIVE_INFINITY,
+        delay: (repeatCount) => getReconnectDelay(repeatCount),
       }),
 
       catchError((err: Error) => {
@@ -154,16 +184,6 @@ export class DataStreamService {
 
       shareReplay({ bufferSize: 1, refCount: false })
     ) as Observable<ProcessDataPoint>;
-
-    // Auto-subscribe to storage stream to ensure writes happen
-    this.storageSubscription = this.storageStream$.subscribe({
-      next: () => {
-        // Data is written via tap operator above
-      },
-      error: (err) => {
-        console.error("[Storage] Storage stream error:", err);
-      },
-    });
   }
 
   /**

@@ -8,6 +8,7 @@ import { useAlarmStore } from "@/stores/useAlarmStore";
 export function useWebSocket(wsUrl?: string) {
   const uiSubscriptionRef = useRef<Subscription | null>(null);
   const storageSubscriptionRef = useRef<Subscription | null>(null);
+  const connectionSubscriptionRef = useRef<Subscription | null>(null);
   const setCurrentData = useProcessStore((state) => state.setCurrentData);
   const addDataPoint = useProcessStore((state) => state.addDataPoint);
   const setStatus = useConnectionStore((state) => state.setStatus);
@@ -35,6 +36,18 @@ export function useWebSocket(wsUrl?: string) {
       // Initialize data stream
       const dataStream = initializeDataStream(wsUrlToUse);
 
+      // Subscribe to connection status changes
+      connectionSubscriptionRef.current = dataStream.connectionStatus$.subscribe({
+        next: (status) => {
+          if (status === "connected") {
+            setStatus("connected");
+            setOnline(true);
+          } else if (status === "reconnecting") {
+            setStatus("error");
+          }
+        },
+      });
+
       // Subscribe to UI stream (100ms) - updates gauges only
       uiSubscriptionRef.current = dataStream.dataStream$.subscribe({
         next: (data) => {
@@ -51,10 +64,6 @@ export function useWebSocket(wsUrl?: string) {
 
           // Record message time
           recordMessage();
-
-          // Update connection status
-          setStatus("connected");
-          setOnline(true);
 
           // Handle sensor alarm (log all alarm events)
           updateAlarmStatus(data.sensor_alarm, data.pressure_psi);
@@ -108,6 +117,9 @@ export function useWebSocket(wsUrl?: string) {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
 
+      if (connectionSubscriptionRef.current) {
+        connectionSubscriptionRef.current.unsubscribe();
+      }
       if (uiSubscriptionRef.current) {
         uiSubscriptionRef.current.unsubscribe();
       }
