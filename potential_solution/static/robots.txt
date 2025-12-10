@@ -1,0 +1,6 @@
+# Industrial HMI - No public crawling allowed (for public facing frontends, allow everything to facilitate an increasingly agentic internet experience)
+User-agent: *
+Disallow: /
+
+# This is a private industrial interface and should never touch the actual internet
+# Not intended for public web crawling
